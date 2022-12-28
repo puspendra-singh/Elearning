@@ -1,0 +1,389 @@
+
+
+/** 1. TYPOGRAPHY
+*******************************************************************/
+
+html,
+body
+{
+    width: 100%;
+    height: 100% !important;
+    margin: 0 !important;
+}
+
+body
+{
+    font-weight: 300;
+    font-style: normal;
+    overflow: hidden;
+    color: #fff;
+    background: #111;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6
+{
+    font-family: 'signa-dogado-bookreg', sans-serif;
+    font-weight: normal;
+    line-height: auto;
+    color: #fff;
+}
+
+h1
+{
+    font-size: 45px;
+}
+
+h2
+{
+    font-size: 35px;
+}
+
+h3
+{
+    font-size: 30px;
+}
+
+h4
+{
+    font-size: 24px;
+}
+
+h5
+{
+    font-size: 18px;
+}
+
+h6
+{
+    font-size: 16px;
+}
+
+p
+{
+    font-family: 'signa-dogado-bookreg', sans-serif;
+    font-size: 14px;
+    line-height: auto;
+}
+
+a,
+a:hover,
+a:focus
+{
+    cursor: pointer;
+    -webkit-transition: all 300ms ease;
+    transition: all 300ms ease;
+    text-decoration: none;
+}
+
+
+/** 2. LOADING
+*****************************************************************/
+
+#page-loader
+{
+    position: fixed;
+    z-index: 99999;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    -webkit-transition: all 800ms cubic-bezier(.540, .086, .000, .980) .2s;
+    transition: all 800ms cubic-bezier(.540, .086, .000, .980) .2s;
+    background: #111;
+}
+
+#page-loader.hide-this
+{
+    bottom: 100%;
+}
+
+#page-loader .spinner-container
+{
+    position: absolute;
+    z-index: 200;
+    left: 50%;
+	top: 50%;
+
+    -webkit-transform: translate(-50%,-50%);
+            transform: translate(-50%,-50%);
+}
+
+#page-loader .spinner-container .css-spinner
+{
+    display: block;
+
+    width: 36px;
+    height: 36px;
+
+    -webkit-transition: all .4s cubic-bezier(.19, 1, .22, 1);
+            transition: all .4s cubic-bezier(.19, 1, .22, 1);
+    -webkit-animation: spinner 400ms linear infinite;
+            animation: spinner 400ms linear infinite;
+
+    opacity: 1;
+    border: solid 2px transparent;
+    border-top-color: #1fb8b2;
+    border-left-color: #1fb8b2;
+    border-radius: 100%;
+}
+
+#page-loader.hide-this .spinner-container .css-spinner
+{
+    opacity: 0;
+}
+
+@-webkit-keyframes spinner
+{
+    0%
+    {
+        -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+    }
+    100%
+    {
+        -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+    }
+}
+
+@keyframes spinner
+{
+    0%
+    {
+        -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+    }
+    100%
+    {
+        -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+    }
+}
+
+
+/** 3. CONTENT
+*****************************************************************/
+
+#main
+{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+}
+
+#main-container
+{
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+    -webkit-transition: all 200ms linear;
+            transition: all 200ms linear;
+}
+
+.container-mid
+{
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 100%;
+    -webkit-transform: translateY(-50%);
+            transform: translateY(-50%);
+    text-align: center;
+}
+
+
+/** 8. MEDIA QUERIES
+*****************************************************************/
+
+@media screen and (max-width: 1400px), screen and (max-height: 720px)
+{
+    .tooltip.bottom .tooltip-inner
+    {
+        font-size: 10px;
+    }
+
+    .up-button
+    {
+        width: 60px;
+    }
+
+    .up-button.active
+    {
+        height: 60px;
+    }
+
+    .up-button i
+    {
+        font-size: 14px;
+        line-height: 60px;
+    }
+
+    #overlay .container-mid .container
+    {
+        padding: 40px 40px;
+    }
+
+    #about h1
+    {
+        font-size: 31px;
+
+        margin-bottom: 20px;
+
+        letter-spacing: 1px;
+    }
+
+    #about p
+    {
+        font-size: 10px;
+        max-width: 460px;
+        margin: 0 auto 28px auto;
+    }
+}
+
+@media screen and (max-width: 420px), screen and (max-height: 720px)
+{
+    .spinner
+    {
+        width: 100px;
+    }
+
+    .tooltip.bottom .tooltip-inner
+    {
+        font-size: 8px;
+    }
+
+    #overlay .container-mid .container
+    {
+        padding: 55px 40px;
+    }
+
+    .up-button
+    {
+        width: 50px;
+    }
+
+    .up-button.active
+    {
+        height: 50px;
+    }
+
+    .up-button i
+    {
+        font-size: 11px;
+        line-height: 50px;
+    }
+
+    #about h1
+    {
+        font-size: 30px;
+    }
+
+    #about .subscribe-form input
+    {
+        font-size: 7px !important;
+    }
+
+    #about .social-icons li
+    {
+        margin: 0 14px;
+    }
+}
+
+@media screen and (max-width: 329px)
+{
+    #about .social-icons li
+    {
+        margin: 0 10px;
+    }
+
+    .input-group-lg > .form-control,
+    .input-group-lg > .input-group-addon,
+    .input-group-lg > .input-group-btn > .btn
+    {
+        padding: 10px 12px;
+    }
+}
+
+@media screen and (max-width: 318px)
+{
+    #about .social-icons li
+    {
+        margin: 0 8px;
+    }
+
+    #about .subscribe-form .input-group
+    {
+        display: block;
+    }
+
+    #about .subscribe-form input
+    {
+        display: block;
+        text-align: center;
+        border-right: 1px solid #d6d6d6 !important;
+    }
+}
+
+@media screen and (min-width: 3000px)
+{
+    .stop-button,
+    .volume-button
+    {
+        font-size: 32px;
+        position: fixed;
+        z-index: 101;
+        bottom: 40px;
+        cursor: pointer;
+        color: #fff;
+    }
+
+    .stop-button
+    {
+        left: 110px;
+    }
+
+    .volume-button
+    {
+        left: 40px;
+    }
+
+    .spinner
+    {
+        width: 240px;
+    }
+
+    .up-button
+    {
+        width: 100px;
+    }
+
+    .up-button.active
+    {
+        height: 100px;
+    }
+
+    .up-button i
+    {
+        font-size: 20px;
+        line-height: 100px;
+    }
+
+    #overlay .container-mid .container
+    {
+        padding: 120px 40px;
+    }
+
+}

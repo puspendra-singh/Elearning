@@ -1,0 +1,138 @@
+<% stats=(typeof stats !==typeof undefined && stats) ? stats :{}; result=(typeof result !==typeof undefined && result) ?
+    result :[]; todayRegister=(typeof todayRegister !==typeof undefined && todayRegister) ? todayRegister :{}; %>
+    <div class="container-fluid">
+        <div class="row clearfix">
+            <a href="<%= WEBSITE_ADMIN_URL %>users">
+                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                    <div class="info-box">
+                        <div class="icon bg-indigo">
+                            <i class="material-icons">face</i>
+                        </div>
+                        <div class="content">
+                            <div class="text">Users</div>
+                            <div 
+                                class="number count-to" 
+                                data-from="0" 
+                                data-to="<%= (result.totalUsers) ? result.totalUsers : 0;%>" 
+                                data-speed="1000"
+                                data-fresh-interval="20">
+                                <%= (result.totalUsers) ? result.totalUsers : 0;%>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            <a href="<%= WEBSITE_ADMIN_URL %>video_lessons">
+                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                    <div class="info-box">
+                        <div class="icon bg-cyan">
+                            <i class="material-icons">video_library</i>
+                        </div>
+                        <div class="content">
+                            <div class="text">Video Lessions</div>
+                            <div 
+                                class="number count-to" 
+                                data-from="0" 
+                                data-to="<%= (result.totalVideoLessions) ? result.totalVideoLessions : 0%>" 
+                                data-speed="1000"
+                                data-fresh-interval="20"
+                            >
+                                <%= (result.totalVideoLessions) ? result.totalVideoLessions : 0%>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <div class="icon bg-blue-grey">
+                        <i class="material-icons">business</i>
+                    </div>
+                    <div class="content">
+                        <div class="text">Earnings</div>
+                        <div 
+                            class="number count-to" 
+                            data-from="0" 
+                            data-to="0" 
+                            data-speed="1500"
+                            data-fresh-interval="20"
+                        >
+                            0
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <a href="<%= WEBSITE_ADMIN_URL %>contact_us">
+                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                    <div class="info-box">
+                        <div class="icon bg-orange">
+                            <i class="material-icons">pan_tool</i>
+                        </div>
+                        <div class="content">
+                            <div class="text">Inquiries</div>
+                            <div 
+                                class="number count-to" 
+                                data-from="0" 
+                                data-to="<%= (result.totalInquiries) ? result.totalInquiries : 0%>" 
+                                data-speed="1000"
+                                data-fresh-interval="20"
+                            >
+                                <%= (result.totalInquiries) ? result.totalInquiries : 0%>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="row clearfix">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header">
+                        <h2>Users</h2>
+                    </div>
+                    <div class="body">
+                        <iframe 
+                            class="chartjs-hidden-iframe"
+                            style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; inset: 0px;">
+                        </iframe>
+                        <canvas 
+                            id="bar_chart_users" 
+                            height="196" 
+                            style="display: block; width: 392px; height: 196px;"
+                            width="392"
+                        >
+                        </canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header">
+                        <h2>Earnings</h2>
+                    </div>
+                    <div class="body">
+                        <iframe 
+                            class="chartjs-hidden-iframe"
+                            style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; inset: 0px;"
+                        ></iframe>
+                        <canvas 
+                            id="bar_chart_earnings" 
+                            height="196"
+                            style="display: block; width: 392px; height: 196px;" 
+                            width="392"
+                        ></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <%- contentFor("script")%>
+        <script src="<%=WEBSITE_ADMIN_JS_PLUGIN_PATH%>jquery-countto/jquery.countTo.js" type="text/javascript"></script>
+
+        <script type="text/javascript">
+                $('.count-to').countTo();
+                var userRecords = <%- JSON.stringify(result.monthYearWiseData); %>;
+                var earningRecords = <%- JSON.stringify(result.monthYearWiseData); %>;
+        </script>
+        <script src="<%=WEBSITE_ADMIN_JS_PLUGIN_PATH%>chartjs/Chart.bundle.js" type="text/javascript"></script>
+        <script src="<%=WEBSITE_ADMIN_JS_PAGE_PATH%>dashboard/chartjs.js" type="text/javascript"></script>

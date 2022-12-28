@@ -1,0 +1,71 @@
+<aside id="leftsidebar" class="sidebar">
+	<!-- User Info -->
+	<div class="user-info">
+		<div class="info-container">
+			<div class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><%= (auth.full_name) ? auth.full_name : "Demo" %></div>
+			<div class="email"><%= (auth.email) ? auth.email : "Demo@mailinator.com" %></div>
+			<div class="btn-group user-helper-dropdown">
+				<i class="material-icons" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">keyboard_arrow_down</i>
+				<ul class="dropdown-menu pull-right">
+					<li><a href="<%= WEBSITE_ADMIN_URL%>edit_profile"><i class="material-icons">person</i><%= __("admin.system.edit_profile"); %></a></li>
+					<li role="seperator" class="divider"></li>
+					<li><a href="<%= WEBSITE_ADMIN_URL%>logout"><i class="material-icons">input</i><%= __("admin.system.sign_out"); %></a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<!-- #User Info -->
+	<!-- Menu -->
+	<div class="menu">
+		<ul class="list">
+			<% if(typeof admin_modules_list !== typeof undefined && admin_modules_list && admin_modules_list.length > 0){
+				admin_modules_list.map(function(module,index){
+					let moduleGroupPath = (module.group_path) ? module.group_path.split(',') : [];  %>
+					<li class="<%= (moduleGroupPath.indexOf(active_path) != -1) ? "active" : "" %>">
+						<%
+							let extraString = "";
+							let menuLink	= WEBSITE_ADMIN_URL+module.path;
+							if(typeof module.childs !== typeof undefined && module.childs && module.childs.length > 0){
+								let isToggled 	= (moduleGroupPath.indexOf(active_path) != -1) ? 'active toggled' : '';
+								extraString 	= 'class="menu-toggle '+isToggled+'"';
+								menuLink		= module.path;
+							}
+						%>
+						<a href="<%= menuLink%>" <%-extraString%>>
+							<i class="material-icons"><%= module.icon%></i>
+							<span><%= module.title %></span>
+						</a>
+						<%if(typeof module.childs !== typeof undefined && module.childs && module.childs.length > 0){%>
+							<ul class="ml-menu">
+								<% 
+								module.childs.map(function(child,index){
+									let activeClass 	= "";
+									let childGroupPath = (child.group_path) ? child.group_path.split(',') : [];
+									childGroupPath.map(function(childPath){
+										if(site_url.indexOf(childPath) > -1){
+											activeClass = "active";
+										}
+									}); %>
+									<li class="<%= activeClass %>">
+										<a href="<%= WEBSITE_ADMIN_URL+child.path%>"><%= child.title %></a>
+									</li>
+								<%})%>
+							</ul>
+						<%}%>
+					</li> <%
+				});
+			} %>
+		</ul>
+	</div>
+	<!-- #Menu -->
+	<!-- Footer -->
+	<div class="legal">
+		<div class="copyright">
+			<%- settings["Site.copyright_text"] %>
+		</div>
+	</div>
+	<!-- #Footer -->
+</aside>
+
+
+

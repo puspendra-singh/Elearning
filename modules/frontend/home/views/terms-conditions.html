@@ -1,0 +1,18 @@
+
+<div class="site-bg">
+   <section class="slider-section inner-page-bg">
+      <div class="slider-section-inner">
+         <div class="container">
+            <h1><%= (terms_condtions.name) ? terms_condtions.name : 'N/A'%></h1>
+         </div>
+         <div class="shape02"><img src="<%=WEBSITE_FRONT_FILES_URL%>images/shape02.png"></div>
+         <div class="shape03"><img src="<%=WEBSITE_FRONT_FILES_URL%>images/shap01.png"></div>
+      </div>
+   </section>
+   <section class="page-content">
+      <div class="container">
+         <%- (terms_condtions.body) ? terms_condtions.body : 'N/A'%>
+      </div>
+   </section>
+</div>
+

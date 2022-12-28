@@ -1,0 +1,47 @@
+/*round*/
+
+@keyframes spin {
+  from {
+    transform: rotate3d(0, 0, 1, 0deg);
+  }
+  to {
+    transform: rotate3d(0, 0, 1, 180deg);
+  }
+}
+
+
+/*left-right*/
+
+@keyframes float {
+  0% {
+    transform: translatex(0px);
+  }
+  50% {
+    transform: translatex(-20px);
+  }
+  100% {
+    transform: translatex(0px);
+  }
+}
+
+
+/*bounce*/
+@keyframes bounce {
+  0%, 100%, 20%, 50%, 80% {
+    -webkit-transform: translateY(0);
+    -ms-transform:     translateY(0);
+    transform:         translateY(0)
+  }
+  40% {
+    -webkit-transform: translateY(-30px);
+    -ms-transform:     translateY(-30px);
+    transform:         translateY(-30px)
+  }
+  60% {
+    -webkit-transform: translateY(-15px);
+    -ms-transform:     translateY(-15px);
+    transform:         translateY(-15px)
+  }
+}
+
+

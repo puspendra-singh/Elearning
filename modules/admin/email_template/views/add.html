@@ -1,0 +1,231 @@
+<div class="container-fluid" id="main-container">
+	<div class="row clearfix" >
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<div class="card">
+				<div class="header">
+					<h2>
+						<%= __('admin.system.add'); %>
+					</h2>
+					<ul class="header-dropdown m-r--5 btn-right-top-margin">
+						<li>
+							<a href="<%=admin_list_url%>" >
+								<button type="button" class="btn bg-indigo waves-effect">
+									<i class="material-icons font-14">keyboard_backspace</i> <%= __('admin.system.back'); %>
+								</button>
+							</a>
+						</li>
+					</ul>
+				</div>
+				<div class="body">
+					<!-- Multilanguage tabs -->
+						<%- include ../../elements/multilanguage_tabs.html %>
+					<!-- Multilanguage tabs -->
+					<form id="add-email-template" data-submit-btn-id="email-template-add-btn-id" method="post" class="on_click_submit" role="form">
+						<!-- Tab panes -->
+						<div class="tab-content mt-20">
+							<div class="row clearfix">
+								<% if(typeof language_list !== typeof undefined && Array.isArray(language_list) && language_list.length > 1){ %>
+									<div class="col-sm-12">
+										<span class="float-right">
+											<b><%= __('admin.system.these_fields_are_same_in_all_languages'); %></b>
+										</span>
+									</div>
+								<% } %>
+								<div class="col-sm-6">
+									<div class="form-group">
+										<div class="form-line">
+											<label for="name" class="control-label">
+												<%=  __('admin.email_template.name'); %><span class="required"> *</span>
+											</label>
+											<input type="text" id="name" class="form-control" name="name"/>
+										</div>
+										<span id="name_error" class="error"></span>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="form-group">
+										<div class="form-line">
+											<label for="action" class="control-label">
+												<%=  __('admin.email_template.action'); %><span class="required"> *</span>
+											</label>
+											<select id="action" class="form-control" name="action">
+												<%- (typeof email_action_list!== typeof undefined && email_action_list) ? email_action_list :"";%>
+											</select>
+										</div>
+										<span id="action_error" class="error"></span>
+									</div>
+								</div>
+							</div>
+							<div class="row clearfix">
+								<div class="col-sm-6">
+									<div class="form-group">
+										<div class="form-line">
+											<label for="constants" class="control-label">
+												<%=  __('Constants'); %>
+											</label>
+											<select id="constants" class="form-control" name="constants">
+												<option value=""><%= __('Select Constants')%></option>
+											</select>
+										</div>
+										<span id="constants_error" class="error"></span>
+									</div>
+								</div>
+								<div class="col-sm-4">
+									<button type="button" class="btn bg-indigo waves-effect m-t-25" onclick="insertHTML()">
+										<i class="material-icons font-14">colorize</i> <%= __('Insert variable'); %>
+									</button>
+								</div>
+							</div>
+							<%
+							if(typeof language_list !== typeof undefined && Array.isArray(language_list) && language_list.length > 1){ %>
+								<div class="row clearfix seperator-line field-seperator"> <hr/> </div>
+							<%
+							}
+							if(typeof language_list !== typeof undefined && Array.isArray(language_list) && language_list.length > 0){
+								language_list.forEach(function(languages){
+									languageId 		= 	(languages._id) 		?  languages._id 		:'';
+									languageCode 	= 	(languages.lang_code) 	?  languages.lang_code 	:'';
+								%>
+									<div role="tabpanel" class="tab-pane multi-lang-tab-pane fade in <%= (languageCode == DEFAULT_LANGUAGE_CODE) ? 'active' : ''; %>" id="multi_lang_<%= languageCode; %>">
+										<div class="row clearfix">
+											<div class="col-sm-12">
+												<div class="form-group">
+													<div class="form-line">
+														<label for="subject_<%= languageCode; %>" class="control-label">
+															<%=  __('admin.email_template.subject'); %>
+															<% if(languageCode ==  DEFAULT_LANGUAGE_CODE){ %>
+																<span class="required"> *</span>
+															<% } %>
+														</label>
+														<input type="hidden" name="email_descriptions[<%= languageId %>][language_id]" value="<%= languageId; %>"/>
+														<input type="text" id="subject_<%= languageCode; %>" class="form-control" name="email_descriptions[<%= languageId %>][subject]"/>
+													</div>
+													<% if(languageCode ==  DEFAULT_LANGUAGE_CODE){ %>
+														<span id="subject_error" class="error"></span>
+													<% } %>
+												</div>
+											</div>
+										</div>
+										<div class="row clearfix">
+											<div class="col-sm-12">
+												<div class="form-group">
+													<div class="form-line">
+														<label for="body_<%= languageCode; %>" class="control-label">
+															<%=  __('admin.email_template.body'); %>
+															<% if(languageCode ==  DEFAULT_LANGUAGE_CODE){ %>
+																<span class="required"> *</span>
+															<% } %>
+														</label>
+														<textarea rows="4"  id="body_<%= languageCode; %>" class="form-control no-resize ckeditor"  name="email_descriptions[<%= languageId %>][body]"></textarea>
+													</div>
+													<% if(languageCode ==  DEFAULT_LANGUAGE_CODE){ %>
+														<span id="body_error" class="error"></span>
+													<% } %>
+												</div>
+											</div>
+										</div>
+									</div>
+								<%
+								});
+							} %>
+						</div>
+						<button type="button" id="email-template-add-btn-id" class="btn bg-green btn-sm waves-effect btn-submit" <%- ADMIN_LOADING_TEXT %> >
+							<i class="material-icons font-14">save</i>
+							<%= __('admin.system.submit'); %>
+						</button>
+						<a href="javascript:location.reload(true);" class="text-decoration-none"><button type="button" class="btn bg-blue-grey btn-sm waves-effect"><i class="material-icons font-14">refresh</i> <%= __("admin.system.reset"); %></button></a>
+						<a href="<%= admin_list_url %>"><button type="button" class="btn bg-brown btn-sm waves-effect"><i class="material-icons font-14">cancel</i><%= __("admin.system.cancel"); %></button></a>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<%- contentFor('css') %>
+	<link rel="stylesheet" href="<%=WEBSITE_ADMIN_JS_PLUGIN_PATH%>bootstrap-select/css/bootstrap-select.css">
+
+<%- contentFor('script') %>
+	<script type="text/javascript" src="<%=WEBSITE_ADMIN_JS_PLUGIN_PATH%>bootstrap-select/js/bootstrap-select.js"></script>
+	<script type="text/javascript" src="<%=WEBSITE_ADMIN_JS_PLUGIN_PATH%>ckeditor/ckeditor.js"></script>
+	<script type="text/javascript">
+		/**
+		 * Function to submit form
+		 */
+		$('.btn-submit').click(function(){
+			updateCkeditorValue();
+			var btnId = $(this).attr('id');
+			startTextLoading(btnId);
+			ajax_submit('add-email-template',function(status,response){
+				if(status){
+					window.location.href = response.redirect_url;
+				}else{
+					changeTab('<%= DEFAULT_LANGUAGE_CODE %>');
+					stopTextLoading(btnId);
+				}
+			});
+		});
+
+		/**
+		 * Function to get email action options on change
+		 */
+		$("#action").change(function(e){
+			appendConstants();
+		});
+
+		/**
+		 * Function to get email action options on page load
+		 */
+		$(function(){
+			appendConstants();
+		});
+
+		/**
+		 * Function to append email constants
+		 */
+		function appendConstants(){
+			var value 	= 	$("#action").val();
+			var options =	'<option value=""><%- __('admin.email_template.select_constant')%></option>';
+			$("#constants").html(options);
+			$('#constants').selectpicker('refresh');
+			if(value){
+				$.ajax({
+					type	:	"POST",
+					url		: 	"<%=admin_list_url%>/get_action_options",
+					data	: 	{"action" : value},
+					success	: 	function(response){
+						if(response && response.status == "<%= STATUS_SUCCESS%>"){
+							var result = (response.result)	 ? response.result :[];
+							result.map(function(records){
+								if(records){
+									options  += "<option value='"+records+"'>"+records+"</option>";
+								}
+							});
+
+							$("#constants").html(options);
+							$('#constants').selectpicker('refresh');
+						}else if(response && response.message){
+							notice(response.status,response.message);
+						}
+					},
+				});
+			}
+		}// end appendConstants()
+
+		/**
+		* Insert constant in ckeditor
+		*/
+		function insertHTML(){
+			var constant = $("#constants").val();
+			if(constant){
+				$(".ckeditor").each(function(index){
+					var id = $(this).attr("id");
+					if(id){
+						var newStr = '{'+constant+'}';
+						var oEditor = CKEDITOR.instances[id] ;
+						oEditor.insertHtml(newStr) ;
+					}
+				});
+			}
+		}// end insertHTML()
+	</script>

@@ -1,0 +1,92 @@
+<div class="container-fluid" id="main-container">
+	<div class="row clearfix" >
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<div class="card">
+				<div class="header">
+					<h2>
+						<%= (is_editable) ? __("admin.system.edit") : __("admin.system.add"); %>
+					</h2>
+					<ul class="header-dropdown m-r--5 btn-right-top-margin">
+						<li>
+							<a href="<%=admin_list_url%>" >
+								<button type="button" class="btn bg-indigo waves-effect">
+									<i class="material-icons font-14">keyboard_backspace</i> <%= __("admin.system.back"); %>
+								</button>
+							</a>
+						</li>
+					</ul>
+				</div>
+				<div class="body">
+					<form id="add-pricing-packages" data-submit-btn-id="pricing-packages-add-btn-id" method="post" class="on_click_submit" role="form">
+						<div class="row clearfix">
+
+							<div class="col-sm-12">
+								<div class="form-group">
+									<div class="form-line">
+										<label for="amount" class="control-label">
+											<%= __("admin.faq.order"); %><span class="required"> * </span>
+										</label>
+										<input type="text" id="order" class="form-control" name="order" value="<%=(result.order) ? result.order :''%>"/>
+									</div>
+									
+									<span id="order_error" class="error"></span>
+								</div>
+							</div>
+						</div>
+						<div class="row clearfix">
+							<div class="col-sm-12">
+								<div class="form-group">
+									<div class="form-line">
+										<label for="question" class="control-label">
+											<%= __("admin.faq.question"); %><span class="required"> * </span>
+										</label>
+										<input type="text" id="question" class="form-control" name="question" value="<%=(result.question) ? result.question :''%>"/>
+									</div>
+									<span id="question_error" class="error"></span>
+								</div>
+							</div>
+						</div>
+						<div class="row clearfix">
+							<div class="col-sm-12">
+								<div class="form-group">
+									<div class="form-line">
+										<label for="days" class="control-label">
+											<%= __("admin.faq.answer"); %><span class="required"> * </span>
+										</label>
+										<textarea rows="4"  id="faq_ans" class="form-control no-resize "  name="faq_ans"><%= (result.faq_ans) ? result.faq_ans :''; %></textarea>
+									</div>
+									<span id="faq_ans_error" class="error"></span>
+								</div>
+							</div>
+						</div>
+						<button type="button" id="pricing-packages-add-btn-id" class="btn bg-pink btn-sm waves-effect btn-submit" <%- ADMIN_LOADING_TEXT %> ><i class="material-icons font-14">save</i> <%= __("admin.system.submit"); %></button>
+						<a href="javascript:location.reload(true);" class="text-decoration-none"><button type="button" class="btn bg-blue-grey btn-sm waves-effect"><i class="material-icons font-14">refresh</i> <%= __("admin.system.reset"); %></button></a>
+						<a href="<%= admin_list_url %>"><button type="button" class="btn bg-brown btn-sm waves-effect"><i class="material-icons font-14">cancel</i><%= __("admin.system.cancel"); %></button></a>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<%- contentFor('css') %>
+<link rel="stylesheet" href="<%=WEBSITE_ADMIN_JS_PLUGIN_PATH%>bootstrap-select/css/bootstrap-select.css">
+
+<%- contentFor("script") %>
+<script type="text/javascript" src="<%= WEBSITE_ADMIN_JS_PLUGIN_PATH %>bootstrap-select/js/bootstrap-select.js"></script>
+
+<script type="text/javascript">
+	/**
+	 * Function to submit form
+	 */
+	$('.btn-submit').click(function(){
+		var btnId = $(this).attr('id');
+		startTextLoading(btnId);
+		ajax_submit('add-pricing-packages',function(status,response){
+			if(status){
+				window.location.href = response.redirect_url;
+			}else{
+				stopTextLoading(btnId);
+			}
+		});
+	});
+</script>

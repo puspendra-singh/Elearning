@@ -1,0 +1,258 @@
+
+<div class="site-bg">
+    <section class="slider-section">
+        <div class="slider-section-inner">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="slide-des">
+                        <div class="section-title-head">
+                            <span>E-Learning</span>
+                        </div>
+                        <h1>Best Online learning <br/>& MCQ App</h1>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea</p>
+                        <div class="app-download-btn">
+                            <a href="<%= (settings['Site.play_store']) ? settings['Site.play_store']: '#'%>"><img src="<%=WEBSITE_FRONT_FILES_URL%>images/google-play-btn.png" alt="App Download"/></a>    
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="ger-image">
+                            <img src="<%=WEBSITE_FRONT_FILES_URL%>images/slide-ger.png" alt=""/>   
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="shape01"><img src="<%=WEBSITE_FRONT_FILES_URL%>images/shap01.png"/></div>
+            <div class="shape02"><img src="<%=WEBSITE_FRONT_FILES_URL%>images/shape02.png"/></div>
+            <div class="shape03"><img src="<%=WEBSITE_FRONT_FILES_URL%>images/shap01.png"/></div>
+            <div class="shape04"><img src="<%=WEBSITE_FRONT_FILES_URL%>images/shape02.png"/></div>
+        </div>
+    </section>
+    
+    <section id="about-section" class="about-section section-padding">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="about-image-ger">
+                        <img src="<%=WEBSITE_FRONT_FILES_URL%>images/001.jpeg"/>  
+                    </div>
+                    <div class="about-shape">
+                        <img src="<%=WEBSITE_FRONT_FILES_URL%>images/shape03.png"/>  
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="about-des">
+                        <div class="section-title-head">
+                            <span>About Us</span>
+                        </div>
+                        <h2><%= (about_us.name) ? about_us.name : 'N/A'%></h2>
+                        <p><%- (about_us.body) ? about_us.body : 'N/A'%></p>
+                        <ul>
+                            <li>
+                                <figure><img src="<%=WEBSITE_FRONT_FILES_URL%>images/check.svg" alt="Video Lessons"/></figure>
+                                <figcaption>Video Lessons</figcaption>
+                            </li>
+                            <li>
+                                <figure><img src="<%=WEBSITE_FRONT_FILES_URL%>images/check.svg" alt="Past Papers"/></figure>
+                                <figcaption>Past Papers</figcaption>
+                            </li>
+                            <li>
+                                <figure><img src="<%=WEBSITE_FRONT_FILES_URL%>images/check.svg" alt="Examiner's Mind"/></figure>
+                                <figcaption>Examiner's Mind</figcaption>
+                            </li>
+                            <li>
+                                <figure><img src="<%=WEBSITE_FRONT_FILES_URL%>images/check.svg" alt="Other Resources"/></figure>
+                                <figcaption>Other Resources</figcaption>
+                            </li>
+                            <li>
+                                <figure><img src="<%=WEBSITE_FRONT_FILES_URL%>images/check.svg" alt="Exam Questions"/></figure>
+                                <figcaption>Exam Questions</figcaption>
+                            </li>
+                            <li>
+                                <figure><img src="<%=WEBSITE_FRONT_FILES_URL%>images/check.svg" alt="Multiple Choice Questions"/></figure>
+                                <figcaption>Multiple Choice Questions</figcaption>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="features-section" class="features-section section-padding">
+        <div class="container">
+            <div class="section-head">
+                <div class="section-title-head">
+                    <span>Features</span>
+                </div>
+                <h2>Our App Features</h2>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="features-box">
+                        <figcaption>Examiner's Mind</figcaption>
+                        <figure><img src="<%=WEBSITE_FRONT_FILES_URL%>images/features01.svg"/></figure>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="features-box">
+                        <figcaption>Past Papers</figcaption>
+                        <figure><img src="<%=WEBSITE_FRONT_FILES_URL%>images/features02.svg"/></figure>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="features-box">
+                        <figcaption>Video Lessons</figcaption>
+                        <figure><img src="<%=WEBSITE_FRONT_FILES_URL%>images/features03.svg"/></figure>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="features-box">
+                        <figcaption>Other Resources</figcaption>
+                        <figure><img src="<%=WEBSITE_FRONT_FILES_URL%>images/features04.svg"/></figure>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="testimonials-section" class="testimonials-section section-padding paddTop0">
+        <div class="container">
+            <div class="section-head">
+                <div class="section-title-head">
+                    <span>Testimonials</span>
+                </div>
+                <h2>What our Users Say</h2>
+            </div>
+            <div class="testimonials-slider owl-carousel owl-theme">
+                <%
+                testimonials.map((records,index)=>{
+                    %>
+                    <div class="item">
+                        <div class="testimonials-box">
+                            <div class="testimonials-rating">
+                                <%
+                                    for (let step = 0; step < records.rating; step++) {
+                                        %>
+                                        <img src="<%=WEBSITE_FRONT_FILES_URL%>images/fill-star.svg" alt="rating image" />
+                                    <%}
+                                %>   
+                            </div>
+                        <p><%= (records.message) ? records.message : 'N/A' %> </p>
+                            <div class="testimonal-shape">
+                                <img src="<%=WEBSITE_FRONT_FILES_URL%>images/testimonal-shape.svg" alt="Shape"/> 
+                            </div>
+                            <div class="testimonal-profile">
+                                <figure><img src="<%= (records.full_image_path) ? records.full_image_path : ADD_PROFILE_IMAGE_ICON %>"/></figure>
+                                <figcaption><%= (records.name) ? records.name : "N/A" %></figcaption>
+                            </div>
+                        </div>
+                    </div>
+                <%})
+                %>
+            </div>
+        </div>
+    </section>
+    
+    <section id="faq-section" class="faq-section section-padding">
+        <div class="container">
+            <div class="section-head">
+                <div class="section-title-head">
+                    <span>FAQ</span>
+                </div>
+                <h2>Questions from your side</h2>
+            </div>
+            <div class="accordion" id="accordionExample">
+                <%
+                    faqs.map((records,index)=>{
+                        %>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingOne<%=index%>">
+                            <button class="accordion-button <%= (index == 0) ? '' : 'collapsed'%>" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne<%=index%>" aria-expanded="<%= (index == 0) ? 'true' : 'false'%>"" aria-controls="collapseOne<%=index%>">
+                            <%= (records.question) ? records.question : 'N/A'%>
+                            </button>
+                            </h2>
+                            <div id="collapseOne<%=index%>" class="accordion-collapse collapse <%= (index ==0) ? 'show' : ''%>" aria-labelledby="headingOne<%=index%>" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                <%- (records.faq_ans) ? records.faq_ans : 'N/A'%>
+                            </div>
+                            </div>
+                        </div>
+                    <%});
+                %>
+
+            </div>
+        </div>
+    </section>
+    
+    <section id="download-app" class="download-app-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="download-des">
+                    <div class="section-head">
+                        <div class="section-title-head">
+                            <span>Download App</span>
+                        </div>
+                        <h2>Download Knowing the Examiner's Mind App</h2>
+                    </div>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in</p>
+                    <div class="app-download-btn">
+                        <a href="<%= (settings['Site.play_store']) ? settings['Site.play_store']: '#'%>"><img src="<%=WEBSITE_FRONT_FILES_URL%>images/google-play-btn.png" alt="App Download"/></a>    
+                    </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="app-screen">
+                        <img src="<%=WEBSITE_FRONT_FILES_URL%>images/download-app.png">
+                    </div>               
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="contact-us" class="contact-us-section section-padding">
+        <div class="container">
+            <div class="section-head">
+                <div class="section-title-head">
+                    <span>Contact Us</span>
+                </div>
+                <h2>Connect with Us</h2>
+            </div> 
+    
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="contact-box">
+                        <figure><img src="<%=WEBSITE_FRONT_FILES_URL%>images/cont-icon01.svg"/></figure>
+                        <figcaption>
+                            <h5>Email</h5>  
+                            <p><%= (settings['Contact_us.email']) ? settings['Contact_us.email']: "N/A"%></p>
+                        </figcaption>
+                    </div>   
+                </div> 
+    
+                <div class="col-md-4">
+                    <div class="contact-box">
+                        <figure><img src="<%=WEBSITE_FRONT_FILES_URL%>images/cont-icon02.svg"/></figure>
+                        <figcaption>
+                            <h5>Phone</h5>  
+                            <p><%= (settings['Contact_us.phone']) ? settings['Contact_us.phone']: "N/A"%></p>
+                        </figcaption>
+                    </div>   
+                </div> 
+    
+                <div class="col-md-4">
+                    <div class="contact-box">
+                        <figure><img src="<%=WEBSITE_FRONT_FILES_URL%>images/cont-icon03.svg"/></figure>
+                        <figcaption>
+                            <h5>Location</h5>  
+                            <p><%= (settings['Contact_us.location']) ? settings['Contact_us.location']: "N/A"%></p>
+                        </figcaption>
+                    </div>   
+                </div>
+            </div> 
+        </div>  
+    </section>
+</div>
+        

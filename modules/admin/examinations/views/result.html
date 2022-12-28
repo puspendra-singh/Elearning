@@ -1,0 +1,354 @@
+<%
+    var result            = (typeof result !== typeof undefined && result)    ?   result      :{};
+    var totalPages        = (typeof result !== typeof undefined && result.total_pages)    ?   result.total_pages      :NOT;
+    var currentPage       = (typeof result !== typeof undefined && result.current_page)    ?   result.current_page      :NOT;
+    var totalQuestions    = (typeof result !== typeof undefined && result.total_questions)  ?   result.total_questions      :NOT;
+    var questions         = (result.qns_data) ? result.qns_data : [];
+    var answers           = (result.exam_answers) ? result.exam_answers : [];
+    var examId            = (typeof result._id !== typeof undefined)   ?   result._id  :"";
+    var userId            = (typeof result.user_id !== typeof undefined)   ?   result.user_id  :"";
+%>
+<div class="container-fluid">
+    <div class="row clearfix">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card">
+                <div class="header">
+                    <h2><%= __('admin.exam.exam_result_declaration'); %></h2>
+                    <ul class="header-dropdown m-r--5 btn-right-top-margin visible-md visible-lg visible-sm">
+                        <li>
+                            <a href="<%=admin_list_url%>">
+                                <button type="button" class="btn bg-indigo waves-effect">
+                                    <i class="material-icons font-14">keyboard_backspace</i> <%= __('admin.system.back'); %>
+                                </button>
+                            </a>
+                        </li>
+                    </ul>
+            
+                </div>
+                <div class="body">
+                    <div class="block-header">
+                        <h2>Questions</h2>
+                    </div>
+                    <div class="row clearfix">
+                        <div class="col-xs-12 ol-sm-12 col-md-12 col-lg-12">
+                            <div class="panel-group" id="accordion_17" role="tablist" aria-multiselectable="true">
+                                <%
+                                questions.map((records, index)=>{
+                                    let options         = (records.question_type == MULTIPLE_CHOICE_QUESTION && records.options) ? records.options :[];
+                                    let questionType    = (records.question_type)   ? records.question_type : NOT;
+                                    let correctAnswer   = (records.correct_answer)  ? records.correct_answer : NOT;
+                                    let userAnswer      = (records.user_answer)     ? records.user_answer : NOT;
+                                    let isCorrect       = (userAnswer == correctAnswer && questionType == MULTIPLE_CHOICE_QUESTION) ? true : (questionType != MULTIPLE_CHOICE_QUESTION && correctAnswer == ACTIVE) ? true : false;
+                                    
+                                %>
+                                    <div class="panel panel-col-<%= (isCorrect == true) ? 'light-green' : (questionType == MULTIPLE_CHOICE_QUESTION) ? 'pink' : 'orange'%>">
+                                        <div class="panel-heading" role="tab" id="heading_<%= index%>_17">
+                                            <h4 class="panel-title">
+                                                <a role="button" data-toggle="collapse" data-parent="#accordion_17" href="#collapse_<%= index%>_17" aria-expanded="true" aria-controls="collapse_<%= index%>_17">
+                                                    #<%= index+1%>
+                                                    <%= records.question%>
+                                                    <i class="material-icons"><%= (isCorrect == true) ? 'done' : (questionType == MULTIPLE_CHOICE_QUESTION) ? 'highlight_off' : 'remove'%></i>
+                                                </a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapse_<%= index%>_17" class="panel-collapse collapse <%= (index == NOT) ? 'in' : ''%>" role="tabpanel" aria-labelledby="heading_<%= index%>_17">
+                                            <div class="panel-body">
+                                                <% if(questionType == MULTIPLE_CHOICE_QUESTION && options.length > NOT){
+                                                options.map((recordsOptions, indexOptions)=>{ %>
+                                                <p>
+                                                    <span>
+                                                        <%= QUESTION_OPTION_NAME[indexOptions]%>.&nbsp;
+                                                    </span>
+                                                    <%= (recordsOptions.name) ? recordsOptions.name : 'N/A'%>
+                                                </p>
+                                            <% })
+                                            }else{%>
+                                                <p> <%= userAnswer%></p>
+                                                <% if(correctAnswer == NOT){ %>
+                                                    <hr/>
+                                                    <div class="demo-switch">
+                                                        <div class="switch">
+                                                            <label>Wrong 
+                                                                <a href="javascript:void(0)" data-href="<%=admin_list_url%>/update_answer/<%= records.question_id%>/<%= examId%>" class="confirm_box" data-confirm-message="<%= __('admin.examination.this_is_correct') %>" data-confirm-heading="<%= __('admin.system.are_you_sure') %>">
+                                                                <input type="checkbox" name="">
+                                                            </a><span class="lever"></span>Correct</label>
+                                                        </div>
+                                                    </div>
+                                                <%}%>
+                                            <%  }%>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% }); %>
+                            </div>
+                        </div>
+                        <% if(totalPages > ACTIVE){ %>
+                            <div class="col-xs-12 ol-sm-12 col-md-12 col-lg-12 text-right">
+                                <nav>
+                                    <ul class="pagination">
+                                        <li class="disabled">
+                                            <a href="javascript:void(0);">
+                                                <i class="material-icons">chevron_left</i>
+                                            </a>
+                                        </li>
+                                         <% 
+                                            for (let page = 1; page <= totalPages; page++) {
+                                             %>
+                                                <li class="<%= (page == currentPage) ? 'active' : 'waves-effect'%>">
+                                                    <a href="<%= admin_list_url%>/result/<%= examId%>/<%= page%>"><%= page%></a>
+                                                </li>
+                                        <%  } %>
+                                        <li class="disabled">
+                                            <a href="javascript:void(0);" class="waves-effect">
+                                                <i class="material-icons">chevron_right</i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        <% }%>
+                    </div>
+
+                    <div class="row clearfix">
+                        <!-- Task Info -->
+                        <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
+                            <div class="card">
+                                <div class="header">
+                                    <h2>Correctness Of Each Category</h2>
+                                </div>
+                                <div class="body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover dashboard-task-infos">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Caregory</th>
+                                                    <th>Status</th>
+                                                    <th>Percentage</th>
+                                                    <th>Progress</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <%
+                                                    if(category_correctness && category_correctness.length > NOT){
+                                                        category_correctness.map((records, index)=>{
+                                                            var percentage = (records.percentage) ? records.percentage : NOT;
+                                                            var status     = '';
+                                                            var color      = '';
+                                                            if(percentage > 0 && percentage <= 40 ){status = 'Wrost'; color = 'bg-red';}
+                                                            if(percentage > 40 && percentage <= 50 ){status = 'Average'; color = 'bg-orange';}
+                                                            if(percentage > 50 && percentage < 75){status = 'Good'; color = 'bg-light-green'} 
+                                                            if(percentage >= 75) {status = 'Excellent'; color = 'bg-green'}
+                                                        %>
+                                                            <tr>
+                                                                <td><%= index+1 %></td>
+                                                                <td><%= (records.category) ? records.category : 'N/A' %></td>
+                                                                <td><span class="label <%= color%>"><%= status%></span></td>
+                                                                <td><%= percentage %>%</td>
+                                                                <td>
+                                                                    <div class="progress">
+                                                                        <div class="progress-bar <%= color%>" role="progressbar" aria-valuenow="<%= percentage %>" aria-valuemin="0" aria-valuemax="100" style="width: <%= percentage%>%"></div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                    <%   });
+                                                    }
+                                                %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- #END# Task Info -->
+
+                        <!-- Overall correctness -->
+                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                            <div class="card">
+                                <div class="header">
+                                    <h2>Overall Correctness</h2>
+                                </div>
+                                <div class="body">
+                                    <div id="donut_chart" class="dashboard-donut-chart"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- #END# Overall correctness -->
+                         <%
+                            if(result.is_completed == DEACTIVE && result.is_passed == DEACTIVE){ %>
+                                <!-- Services -->
+                                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <div class="card">
+                                        <form id="exam-result" data-submit-btn-id="exam-result-add-btn-id" method="post" class="on_click_submit" role="form">
+                                            <div class="header">
+                                                <h2>Services</h2>
+                                                <ul class="header-dropdown m-r--5">
+                                                    <li class="dropdown">
+                                                        <div class="icon-and-text-button-demo">
+                                                            <button  type="button" id="exam-result-pass-btn-id" class="btn btn-submit btn-success waves-effect passed" disabled="disabled" <%- ADMIN_LOADING_TEXT %> >
+                                                                <i class="material-icons">done</i>
+                                                                <span> PASS</span>
+                                                            </button>
+                                                            <button type="button" class="btn btn-danger btn-submit waves-effect" id="exam-result-fail-btn-id">
+                                                                <i class="material-icons">cancel</i> 
+                                                                <span>Fail</span>
+                                                            </button>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="body">
+                                                <div class="row">
+                                                    <input type="hidden" name="user_id" value="<%= userId %>">
+                                                    <input type="hidden" id="result_type" name="result_type" value="">
+                                                    <%
+                                                        if(user_services && user_services.length > NOT){
+                                                            user_services.map((records, index)=>{
+                                                                let serviceId   = (records.id) ? records.id : '';
+                                                                let name        = (records.name) ? records.name : '';
+                                                            %>
+                                                                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                                                                    <div class="form-group">
+                                                                        <div class="demo-checkbox services">
+                                                                            <input type="checkbox" id="md_checkbox_2<%= index%>" value="<%= serviceId%>" class="filled-in chk-col-light-green" name="services[]"/>
+                                                                            <label for="md_checkbox_2<%= index%>"><%= name%></label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                        <%  });
+                                                        }
+                                                    %>
+                                                </div>
+                                                <span id="services_error" class="error"></span>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                        <%   }else{
+                                if(result.is_passed == ACTIVE){ %>
+                                    <!-- Services -->
+                                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                        <div class="card">
+                                            <div class="header">
+                                                <h2>Services</h2>
+                                                <ul class="header-dropdown m-r--5">
+                                                    <li class="dropdown">
+                                                        <div class="icon-and-text-button-demo">
+                                                            <button  type="button" class="btn btn-success waves-effect">
+                                                                <i class="material-icons">done</i>
+                                                                <span> PASSED</span>
+                                                            </button>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="body">
+                                                <div class="row">
+                                                    <div class="icon-and-text-button-demo">
+                                                        <%  user_services.map((records, index)=>{
+                                                                let serviceId   = (records._id) ? records._id : '';
+                                                                let name        = (records.name) ? records.name : '';
+                                                            %> 
+                                                                <button type="button" class="btn btn-success waves-effect">
+                                                                    <i class="material-icons">extension</i>
+                                                                    <span><%= name%></span>
+                                                                </button>
+                                                        <%  });%>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                               <%}else{ %>
+                                    <!-- Services -->
+                                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                        <div class="card">
+                                            <div class="header">
+                                                <h2>Services</h2>
+                                                <ul class="header-dropdown m-r--5">
+                                                    <li class="dropdown">
+                                                        <div class="icon-and-text-button-demo">
+                                                            <button  type="button" class="btn btn-danger waves-effect">
+                                                                <i class="material-icons">cancel</i>
+                                                                <span> FAILED</span>
+                                                            </button>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="body">
+                                                <div class="row text-center">No record found</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                              <%}
+                            }
+                        %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%- contentFor("css") %>
+<%- contentFor("script") %>
+
+    <!-- Jquery CountTo Plugin Js -->
+    <script src="<%= WEBSITE_ADMIN_JS_PLUGIN_PATH%>jquery-countto/jquery.countTo.js"></script>
+
+    <!-- Morris Plugin Js -->
+    <script src="<%= WEBSITE_ADMIN_JS_PLUGIN_PATH%>raphael/raphael.min.js"></script>
+    <script src="<%= WEBSITE_ADMIN_JS_PLUGIN_PATH%>morrisjs/morris.js"></script>
+    <script src="<%= WEBSITE_ADMIN_JS_PAGE_PATH%>index.js"></script>
+
+    <script type="text/javascript">
+
+        /**
+         * Function to submit form
+         */
+        $('.btn-submit').click(function(){
+            var btnId = $(this).attr('id');
+            $('#result_type').val(btnId); // Set button id to identify the result declaration type
+            startTextLoading(btnId);
+            ajax_submit('exam-result',function(status,response){
+                if(status){
+                    window.location.href = response.redirect_url;
+                }else{
+                    stopTextLoading(btnId);
+                }
+            });
+        });
+
+        /** Overall correctness */
+        function initDonutChart(){
+            Morris.Donut({
+                element: 'donut_chart',
+                data: [{
+                    label: 'Wrong',
+                    value: customRound('<%= overall_correctness.wrong%>','')
+                }, {
+                    label: 'Correct',
+                    value: customRound('<%= overall_correctness.correct%>')
+                }],
+                colors: ['rgb(233, 30, 99)', 'rgb(0, 188, 212)'],
+                formatter: function (y) {
+                    return y + '%'
+                }
+            });
+        }
+
+
+        /*** Enable/disable pass button*/
+        $('.services').click(function(){
+            var counter = 1;
+            var total = $('input[name="services[]"]').length;
+            var totalChecked = $('input[name="services[]"]:checked').length;
+            if(totalChecked > 1 || counter == 1){
+                $('.passed').prop('disabled', false);
+            }
+            if(totalChecked < 1) $('.passed').prop('disabled', true);
+            counter++;
+        });
+
+
+    </script>>

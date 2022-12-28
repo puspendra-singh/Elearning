@@ -1,0 +1,115 @@
+<div class="container-fluid" id="main-container">
+	<div class="row clearfix">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<div class="card">
+				<div class="header">
+					<h2><%= displayType+' '+__('admin.setting.settings'); %></h2>
+				</div>
+				<div class="body">
+					<form id="edit-setting" data-submit-btn-id="setting-edit-btn-id" method="post" class="on_click_submit" role="form">
+						<%
+						if(typeof result != typeof undefined && Array.isArray(result) && result.length > 0){
+							result.forEach(function(records,index){
+								settingId 		= 	(records._id) 			?  	records._id				:'';
+								inputType 		= 	(records.input_type) 	?  	records.input_type		:'';
+								inputValue		= 	(records.value) 		?  	records.value 			:'';
+								title			= 	(records.title) 		?	records.title 			:'';
+								required		= 	(records.required) 		?	records.required		:'';
+								validateType	= 	(records.validate_type) ?	records.validate_type	:'';
+
+								if((inputType && inputType!="") && (title && title!="") && (settingId && settingId!="")){ %>
+									<div class="row clearfix">
+										<div class="col-sm-12">
+											<div class="form-group">
+												<div class="form-line">
+													<label for="settingValue_<%=index%>" class="text-capitalize float-left"> <%= title; %>
+														<% if(required && required == REQUIRED){ %>
+															<span class="required"> *</span>
+														<%}%>
+													</label>
+													<input type="hidden" name="settings[<%=index%>][id]" 		value="<%=settingId%>">
+													<input type="hidden" name="settings[<%=index%>][title]" 	value="<%=title%>">
+													<input type="hidden" name="settings[<%=index%>][required]" 	value="<%=required%>">
+													<input type="hidden" name="settings[<%=index%>][input_type]" value="<%=inputType%>">
+													<input type="hidden" name="settings[<%=index%>][validate_type]" value="<%=validateType%>">
+													<%	if(inputType == "checkbox"){ %>
+															<div class="switch">
+																<label>
+																	<input id="settingValue_<%=index%>" name="settings[<%=index%>][value]" value="<%=ACTIVE%>" type="checkbox" <%= (inputValue == ACTIVE) ? "checked" :""; %>>
+																	<span class="lever switch-col-green"></span>
+																</label>
+															</div>
+													<%	}else if(inputType == "time"){ %>
+															<input type="text" id="settingValue_<%=index%>" class="form-control time" name="settings[<%=index%>][value]" value="<%= inputValue; %>" placeholder="<%=title %>" readonly='true'/>
+													<%	}else if(inputType == "date"){ %>
+															<input type="text" id="settingValue_<%=index%>" class="form-control date" name="settings[<%=index%>][value]" value="<%= inputValue; %>" placeholder="<%= title %>" readonly='true'/>
+													<%	}else if(inputType == "textarea"){ %>
+															<textarea  id="settingValue_<%=index%>"  name="settings[<%=index%>][value]"  class="form-control no-resize" placeholder="<%= title %>"><%= inputValue; %></textarea>
+													<%	}else{ %>
+															<input type="<%= inputType; %>"  id="settingValue_<%=index%>"  class="form-control" name="settings[<%=index%>][value]" value="<%= inputValue; %>" placeholder="<%=title %>" />
+													<%	} %>
+												</div>
+												 <span id="setting_<%=index%>_value_error" class="error"></span>
+											</div>
+										</div>
+									</div>
+						<%		}
+							});
+						}
+						%>
+						<button type="button" id="setting-edit-btn-id" class="btn bg-pink btn-sm waves-effect btn-submit" <%- ADMIN_LOADING_TEXT %> >
+							<i class="material-icons font-14">save</i> <%= __("admin.system.submit"); %>
+						</button>
+						<a href="javascript:location.reload(true);" class="text-decoration-none"><button type="button" class="btn bg-blue-grey btn-sm waves-effect"><i class="material-icons font-14">refresh</i> <%= __("admin.system.reset"); %></button></a>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<%- contentFor("css") %>
+	<link rel="stylesheet" href="<%=WEBSITE_ADMIN_CSS_PATH%>bootstrap-datetimepicker.css">
+
+<%- contentFor("script") %>
+	<script src="<%=WEBSITE_ADMIN_JS_PATH%>bootstrap-datetimepicker.min.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			/**
+			 * Function to submit form
+			 */
+			$(".btn-submit").click(function(){
+				var btnId = $(this).attr("id");
+				startTextLoading(btnId);
+				ajax_submit("edit-setting",function(status,response){
+					if(status){
+						window.location.href = response.redirect_url;
+					}else{
+						stopTextLoading(btnId);
+					}
+				});
+			});
+
+			/**
+			 * Initialize  for time picker.
+			 */
+			if($('form').find('.time').length > 0){
+				$('.time').datetimepicker({
+					format			: '<%=DATEPICKER_TIME_FORMAT%>',
+					ignoreReadonly	: true,
+				});
+			}
+
+			/**
+			 * Initialize  for date picker.
+			 */
+			if($('form').find('.date').length > 0){
+				$('.date').datetimepicker({
+					format			: '<%=DATE_RANGE_DATE_FORMAT%>',
+					ignoreReadonly	: true,
+					minDate			: moment().hours(0).minutes(0).seconds(0).milliseconds(0),
+					keepInvalid		: true,
+				});
+			}
+		});
+	</script>

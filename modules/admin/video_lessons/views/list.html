@@ -1,0 +1,224 @@
+<div class="container-fluid">
+	<!--Search Start -->
+	<div class="row clearfix">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<div class="panel-group" id="panel-group-id" role="tablist" aria-multiselectable="true">
+				<div class="panel panel-col-pink">
+					<div class="panel-heading" role="tab" id="panel-heading-id">
+						<h4 class="panel-title">
+							<a role="button" data-toggle="collapse" data-target="#panel-collapse-id"
+								data-parent="#panel-group-id" href="javascript:void(0)" aria-expanded="false"
+								aria-controls="panel-collapse-id">
+								<i class="material-icons">search</i>
+								<%= __("admin.system.search"); %>
+									<span class="pull-right collapse-toggle-icon"></span>
+							</a>
+							<span id="reset" class='tooltipShow tooltipHelp  brand-tooltip text-center' title=""
+								data-html="true" data-toggle="tooltip" data-original-title="Reset Search">
+								<i class="material-icons">refresh</i>
+							</span>
+						</h4>
+					</div>
+					<div id="panel-collapse-id" class="panel-collapse collapse in" role="tabpanel"
+						aria-labelledby="panel-heading-id">
+						<form id="searchForm" name="searchForm">
+							<div class="panel-body">
+								<div class="row clearfix dataTables_wrapper">
+									<div class="col-xs-12 col-sm-4">
+										<div class="form-group">
+											<div class="form-line">
+												<input class="form-control" name="search_by_page_name"
+													id="column_filter_3" onkeyup="searchDatatable(3)"
+													placeholder="<%= __('admin.other_resources.search_by_title'); %>">
+											</div>
+										</div>
+									</div>
+									<div class="col-xs-12 col-sm-4">
+										<div class="form-group">
+											<div class="form-line">
+												<select class="form-control show-tick search_on_select"
+                                                    id="level_search" name="level">
+                                                    <option value="">
+                                                        <%=__("admin.video_lessions.search_by_level");%>
+                                                    </option>
+                                                    <%- level_list%>
+                                                </select>
+											</div>
+										</div>
+									</div>
+									<div class="col-xs-12 col-sm-4">
+										<div class="form-group">
+											<div class="form-line">
+												<select class="form-control show-tick search_on_select"
+                                                    id="subject" name="subject">
+                                                    <option value="">
+                                                        <%=__("admin.video_lessions.search_by_subject");%>
+                                                    </option>
+                                                </select>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--Search End -->
+
+	<div class="row clearfix">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<div class="card">
+				<div class="header">
+					<h2>
+						<%= __("admin.video_lessons.video_lessons"); %>
+					</h2>
+					<ul class="header-dropdown m-r--5 btn-right-top-margin visible-md visible-lg visible-sm">
+						<li>
+							<a href="<%=admin_list_url%>/add">
+								<button type="button" class="btn bg-indigo waves-effect">
+									<i class="material-icons font-14">add</i>
+									<%= __('admin.system.add'); %>
+								</button>
+							</a>
+						</li>
+					</ul>
+				</div>
+				<div class="body" style="overflow-x:auto;">
+					<table id="datatable-listing" class="row-border hover table table-bordered cb-data-table table-r"
+						cellspacing="0" width="100%">
+						<thead>
+							<tr>
+								<th width="10%">
+									<%= __("admin.video_lessons.image"); %>
+								</th>
+								<th width="15%">
+									<%= __("admin.video_lessons.level"); %>
+								</th>
+								<th width="15%">
+									<%= __("admin.video_lessons.subject"); %>
+								</th>
+								<th width="30%">
+									<%= __("admin.video_lessons.title"); %>
+								</th>
+								<th width="15%">
+									<%= __("admin.system.modified"); %>
+								</th>
+								<th width="15%">
+									<%= __("admin.system.action"); %>
+								</th>
+							</tr>
+						</thead>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<%- contentFor('css') %>
+	<link rel="stylesheet" href="<%=WEBSITE_ADMIN_JS_PLUGIN_PATH%>bootstrap-select/css/bootstrap-select.css">
+	<%- contentFor("script") %>
+		<script type="text/javascript"
+			src="<%=WEBSITE_ADMIN_JS_PLUGIN_PATH%>bootstrap-select/js/bootstrap-select.js"></script>
+		<script type="text/javascript">
+			/** Function to initialize datatable and get server side data*/
+			var dataTable = "";
+			$(document).ready(function () {
+				dataTable = $('#datatable-listing').DataTable({
+					"bStateSave": true,
+					"fnStateSave": function (oSettings, oData) {
+						localStorage.setItem('DataTables', JSON.stringify(oData));
+					},
+					"fnStateLoad": function (oSettings) {
+						return JSON.parse(localStorage.getItem('DataTables'));
+					},
+					"order": [[4, "desc"]],
+					"sDom": "ltipr",
+					"serverSide": true,
+					"scrollX": true,
+					"lengthMenu": PAGING_LENGTH_MENU,
+					"columns": [
+						{
+							"data": 'full_image_path',
+							"searchable": false,
+							"orderable": false,
+							"render": function (image) {
+								return '<img src="'+image+'?dim=120x120&type=resize" class="profileImage" alt="Video image"/>';
+							}
+						},
+						{ 
+							"data": 'level',
+							"render": function (level) {
+								return level.name;
+							}
+						 },
+						{ 
+							"data": 'subject',
+							"render": function (subject) {
+								return subject.name;
+							}
+						},
+						{ "data": 'title' },
+						{
+							"data": 'modified',
+							"searchable": false,
+							"render": function (modified) {
+								return moment(modified).tz(DEFAULT_TIME_ZONE).format(DATATABLE_DATE_TIME_FORMAT);
+							}
+						},
+						{
+							"data": {},
+							"orderable": false,
+							"searchable": false,
+							"render": function (result) {
+								var id = (result._id) ? result._id : "";
+								return '<a href="<%=admin_list_url%>/edit/'+id+'" class="btn bg-orange btn-sm waves-effect"><i class="material-icons font-14">mode_edit</i><%= __("admin.system.edit"); %></a>' 
+							}
+						},
+
+					],
+					"ajax": {
+						url: "<%=admin_list_url%>",
+						type: "POST",
+						data: function (d) {
+							d.level_search = $('#level_search').val();
+							d.subject_search = $('#subject').val();
+						},
+						dataSrc: function (res) {
+							return res.data;
+						}
+					}
+				});
+			});
+			
+			/**
+			* Search on select
+			*
+			* @param  null
+			*
+			* @return void
+			*/
+			$(".search_on_select").change(function () {
+				dataTable.draw();
+			});
+
+			/**
+			 * Getting subject list
+			 * @ on change method to get level value
+			*/
+			$('#level_search').on('change', function () {
+				$('#subject').val("");
+				dataTable.draw();
+				getDropdownList(this.value, "Search By Subject");
+			});
+
+			/** Javascript function to search datatable */
+			function searchDatatable(columnNumber) {
+				var query = $('#column_filter_' + columnNumber).val();
+				dataTable.column(columnNumber).search(query).draw()
+			}//end searchDatatable()
+		</script>
+		<script type="text/javascript" src="<%=WEBSITE_ADMIN_JS_PATH%>datatable_state_storage.js"></script>

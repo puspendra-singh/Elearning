@@ -1,0 +1,159 @@
+<div class="container-fluid" id="main-container">
+	<div class="row clearfix">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<div class="card">
+				<div class="header">
+					<h2>
+						<%= __("admin.system.add"); %>
+					</h2>
+					<ul class="header-dropdown m-r--5 btn-right-top-margin">
+						<li>
+							<a href="<%=admin_list_url%>"><button type="button" class="btn bg-indigo waves-effect"><i
+										class="material-icons font-14">keyboard_backspace</i>
+									<%= __("admin.system.back"); %>
+								</button></a>
+						</li>
+					</ul>
+				</div>
+				<div class="body">
+					<!-- Multilanguage tabs -->
+					<%- include ../../elements/multilanguage_tabs.html %>
+						<!-- Multilanguage tabs -->
+						<form id="add-subject" data-submit-btn-id="subject-add-btn-id" method="post" class="on_click_submit"
+							role="form">
+							<div class="row clearfix">
+								<div class="col-sm-12 align-center">
+									<div class="form-group add-image">
+										<input name="icon_image" id="icon_image" class="form-control image-input-file"
+											type="file" />
+										<span class="help-inline required icon_image" id="ContentTypeNameSpan">
+											<div id="pImage">
+												<img src="<%=ADD_PROFILE_IMAGE_ICON%>?dim=120x120&type=crop"
+													alt="Icon image" class="profileImage" />
+											</div>
+										</span>
+										<div class="m-t-10">
+											<a href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom"
+												title="<%= __('admin.system.allowed_file_extension')%> <%= ALLOWED_IMAGE_EXTENSIONS.join(', ') + '.'%>"
+												class="btn
+												bg-teal btn-block btn-sm waves-effect changePhoto">
+												<%= __("admin.user.upload_image"); %>
+											</a>
+										</div>
+										<span id="icon_image_error" class="error"></span>
+									</div>
+								</div>
+							</div>
+							<div class="row clearfix">
+								<div class="col-sm-12">
+									<div class="form-group">
+										<div class="form-line">
+											<label for="level" class="control-label">
+												<%= __("admin.syllabus.level_or_grade"); %>
+												<span class="required"> *</span>
+											</label>
+											<select class="form-control show-tick search_by_status" name="level" id="level">
+												<option value=""><%= __("admin.syllabus.select_level_grade"); %></option>
+												<%- level_list %>
+											</select>
+										</div>
+										<span id="level_error" class="error"></span>
+									</div>
+								</div>
+								<div class="col-sm-12">
+									<div class="form-group">
+										<div class="form-line">
+											<label for="name"
+												class="control-label">
+												<%= __("admin.system.name"); %>
+												<span class="required"> *</span>
+											</label>
+											<input type="text"
+												id="name"
+												class="form-control"
+												name="name" />
+										</div>
+										<span id="name_error" class="error"></span>
+									</div>
+								</div>
+
+							</div>
+							<button type="button" id="subject-add-btn-id" class="btn bg-pink btn-sm waves-effect btn-submit"
+								<%- ADMIN_LOADING_TEXT %> ><i class="material-icons font-14">save</i>
+								<%= __("admin.system.submit"); %>
+							</button>
+							<a href="javascript:location.reload(true);" class="text-decoration-none"><button
+									type="button" class="btn bg-blue-grey btn-sm waves-effect"><i
+										class="material-icons font-14">refresh</i>
+									<%= __("admin.system.reset"); %>
+								</button></a>
+							<a href="<%= admin_list_url %>"><button type="button"
+									class="btn bg-brown btn-sm waves-effect"><i
+										class="material-icons font-14">cancel</i>
+									<%= __("admin.system.cancel"); %>
+								</button></a>
+						</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<%- contentFor('css') %>
+    <link rel="stylesheet" href="<%=WEBSITE_ADMIN_JS_PLUGIN_PATH%>daterangepicker/daterangepicker.css">
+    <link rel="stylesheet" href="<%=WEBSITE_ADMIN_JS_PLUGIN_PATH%>bootstrap-select/css/bootstrap-select.css">
+
+    <%- contentFor("script") %>
+        <script 
+			type="text/javascript"
+            src="<%= WEBSITE_ADMIN_JS_PLUGIN_PATH %>bootstrap-select/js/bootstrap-select.js"
+		></script>
+	<script type="text/javascript">
+
+		/**
+		 * Function to submit form
+		 */
+		$('.btn-submit').click(function () {
+			var btnId = $(this).attr('id');
+			startTextLoading(btnId);
+			submit_multipart_form('add-subject', function (status, response) {
+				if (status) {
+					window.location.href = response.redirect_url;
+				} else {
+					stopTextLoading(btnId);
+				}
+			});
+		});
+
+		/**
+         * icon image Upload
+         */
+		 $(document).on("click", ".changePhoto", function () {
+            if (!$(".add-image #icon_image").hasClass("added")) {
+                $(".add-image #icon_image").trigger("click");
+                $(".add-image #icon_image").addClass("added");
+                window.setTimeout(function () {
+                    $(".add-image #icon_image").removeClass("added");
+                }, 500);
+            }
+        });
+
+        /**
+         *Icon user image after select
+            */
+        $("#icon_image").on("change", function () {
+            var files = !!this.files ? this.files : [];
+            if (!files.length || !window.FileReader) return; // no file selected, or no FileReader support
+
+            if (/^image/.test(files[0].type)) {
+                // only image file
+                var reader = new FileReader(); // instance of the FileReader
+                reader.readAsDataURL(files[0]); // read the local file
+                reader.onloadend = function () {
+
+                    $("#pImage").html("<img src='" + this.result + "' class='profileImage' >");
+                }
+            }
+            $("span#icon_image_error").text("");
+        });
+	</script>

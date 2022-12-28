@@ -1,0 +1,155 @@
+<% result = (typeof result !== typeof undefined)?  result  : {};%>
+<div class="container-fluid" id="main-container">
+    <div class="row clearfix">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card">
+                <div class="header">
+                    <h2>
+                        <%= __('admin.user.edit_user'); %>
+                    </h2>
+                    <ul class="header-dropdown m-r--5 btn-right-top-margin">
+                        <li>
+                            <a href="<%=admin_list_url%>" >
+                                <button type="button" class="btn bg-indigo waves-effect">
+                                    <i class="material-icons font-14">keyboard_backspace</i> <%= __("admin.system.back"); %>
+                                </button>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="body">
+                    <form id="edit-user" data-submit-btn-id="user-edit-btn-id" method="post" class="on_click_submit" role="form">
+                        <div class="row clearfix"> 
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        <label for="full_name" class="control-label"><%= __('admin.user.full_name'); %><span class="required"> *</span> </label>
+                                        <input name="full_name" id="full_name" type="text" class="form-control" value="<%=(result.full_name)    ? result.full_name :'';%>"/>
+                                    </div>
+                                    <span id="full_name_error" class="error"></span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <div class="form-line cursor-not-allowed">
+                                        <label for="email" class="control-label"><%= __('admin.user.email'); %><span class="required"> * </span> </label>
+                                        <input name="email" id="email" type="text" class="form-control readonly" value="<%=(result.email) ? result.email :'';%>" readonly="true"  />
+                                    </div>
+                                    <span id="email_error" class="error"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row clearfix">
+                            <div class="col-sm-6 country-code-mask">
+                                <label for="mobile_number" class="control-label"><%= __('admin.user.phone_number'); %><span class="required"> *</span> </label>
+                                <div class="input-group">
+                                    <div class="form-line cursor-not-allowed">
+                                        <span class="input-group-addon color-gray">
+                                            <%=DEFAULT_COUNTRY_CODE%>
+                                        </span>
+                                        <input name="mobile_number" id="mobile_number" type="text" class="form-control readonly" value="<%=(result.mobile_number) ? result.mobile_number :"";%>"  readonly="true"/>
+                                    </div>
+                                    <span id="mobile_number_error" class="error"></span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    
+                                    <span id="user_type_error" class="error"></span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row clearfix">
+                            <div class="col-sm-12">
+                                <div class="alert alert-info">
+                                    <i class="material-icons pull-left font-18">info</i>&nbsp; <%= __('admin.user.please_leave_blank_if_you_do_not_want_to_change_password'); %>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row clearfix">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        <label for="password" class="control-label"><%= __('admin.user.password'); %></label>
+                                        <input name="password" id="password" type="password" class="form-control"/>
+                                    </div>
+                                    <span id="password_error" class="error"></span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        <label for="confirm_password" class="control-label"><%= __('admin.user.confirm_password'); %></label>
+                                        <input name="confirm_password" id="confirm_password" type="password" class="form-control"/>
+                                    </div>
+                                    <span id="confirm_password_error" class="error"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button"  id="user-edit-btn-id"  <%- ADMIN_LOADING_TEXT %> class="btn bg-pink btn-sm waves-effect btn-submit"><i class="material-icons font-14">save</i> <%= __('admin.system.submit'); %></button>
+
+                        <a href="javascript:location.reload(true);" class="text-decoration-none"><button type="button" class="btn bg-blue-grey btn-sm waves-effect"><i class="material-icons font-14">refresh</i> <%= __("admin.system.reset"); %></button></a>
+
+                        <a href="<%= admin_list_url %>"><button type="button" class="btn bg-brown btn-sm waves-effect"><i class="material-icons font-14">cancel</i><%= __("admin.system.cancel"); %></button></a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- contentFor("css") %>
+    <link rel="stylesheet" href="<%=WEBSITE_ADMIN_JS_PLUGIN_PATH%>bootstrap-select/css/bootstrap-select.css">
+<%- contentFor("script") %>
+    <script type="text/javascript" src="<%=WEBSITE_ADMIN_JS_PLUGIN_PATH%>bootstrap-select/js/bootstrap-select.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            /**
+             * Function to submit form
+             */
+            $(".btn-submit").click(function(){
+                var btnId = $(this).attr("id");
+                startTextLoading(btnId);
+                ajax_submit("edit-user",function(status,response){
+                    if(status){
+                        window.location.href = response.redirect_url;
+                    }else{
+                        stopTextLoading(btnId);
+                    }
+                });
+            });
+
+            /** 
+             * User image Upload 
+             */
+            $(document).on("click", ".changePhoto", function(){
+                if(!$(".add-image #profile_image").hasClass("added")){
+                    $(".add-image #profile_image").trigger("click");
+                    $(".add-image #profile_image").addClass("added");
+                    window.setTimeout(function(){
+                        $(".add-image #profile_image").removeClass("added");
+                    },500);
+                }
+            });
+            
+            /** 
+             *Show user image after select 
+             */
+            $("#profile_image").on("change", function(){
+                var files = !!this.files ? this.files : [];
+                if (!files.length || !window.FileReader) return; // no file selected, or no FileReader support
+                
+                if (/^image/.test( files[0].type)){ 
+                    // only image file
+                    var reader = new FileReader(); // instance of the FileReader
+                    reader.readAsDataURL(files[0]); // read the local file
+                    reader.onloadend = function(){ 
+                        $("#pImage").html("<img src='"+this.result+"' class='profileImage' >");
+                    }
+                }
+                $("span#profile_image_error").text("");
+            });
+        });
+    </script>

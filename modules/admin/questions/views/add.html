@@ -1,0 +1,345 @@
+<div class="container-fluid" id="main-container">
+	<div class="row clearfix">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<div class="card">
+				<div class="header">
+					<h2>
+						<%= __("admin.system.add"); %>
+					</h2>
+					<ul class="header-dropdown m-r--5 btn-right-top-margin">
+						<li>
+							<a href="<%=admin_list_url%>">
+								<button type="button" class="btn bg-indigo waves-effect">
+									<i class="material-icons font-14">keyboard_backspace</i>
+									<%= __("admin.system.back"); %>
+								</button>
+							</a>
+						</li>
+					</ul>
+				</div>
+				<div class="body">
+					<!-- Multilanguage tabs -->
+					<%- include ../../elements/multilanguage_tabs.html %>
+						<!-- Multilanguage tabs -->
+
+						<% if(typeof language_list !==typeof undefined && Array.isArray(language_list) &&
+							language_list.length> 1){ %>
+							<span class="float-right">
+								<b>
+									<%= __('admin.system.these_fields_are_same_in_all_languages'); %>
+								</b>
+							</span>
+							<% } %>
+								<form id="add-question" data-submit-btn-id="question-add-btn-id" method="post"
+									class="on_click_submit" role="form">
+									<div class="tab-content mt-20">
+										<% if(typeof language_list !==typeof undefined && Array.isArray(language_list)
+											&& language_list.length> 0){ %>
+
+	
+											<div class="row clearfix">
+												<div class="col-sm-6">
+													<div class="form-group">
+														<div class="form-line">
+															<label for="level" class="control-label">
+																<%= __('admin.question.level'); %>
+																	<span class="required"> *</span>
+															</label>
+															<select id="levels" class="form-control show-tick"
+																name="level" data-live-search="true">
+																<option value="">
+																	<%= __("admin.question.select_level"); %>
+																</option>
+																<%- level_list%>
+															</select>
+														</div>
+														<span id="level_error" class="error"></span>
+													</div>
+												</div>
+												<div class="col-sm-6">
+													<div class="form-group">
+														<div class="form-line">
+															<label for="subject" class="control-label">
+																<%= __('admin.question.subject'); %>
+																	<span class="required"> *</span>
+															</label>
+															<select id="subject" class="form-control show-tick"
+																name="subject" data-live-search="true">
+																<option value="">
+																	<%= __("admin.question.select_subject"); %>
+																</option>
+															</select>
+														</div>
+														<span id="subject_error" class="error"></span>
+													</div>
+												</div>
+											</div>
+											<% if(typeof language_list !==typeof undefined &&
+												Array.isArray(language_list) && language_list.length> 1){ %>
+												<div class="row clearfix seperator-line field-seperator">
+													<hr />
+												</div>
+												<% } if(typeof language_list !==typeof undefined &&
+													Array.isArray(language_list) && language_list.length> 0){
+													language_list.forEach(function(languages){
+													languageId = (languages._id) ? languages._id : '';
+													languageCode = (languages.lang_code) ? languages.lang_code : '';
+													%>
+													<div role="tabpanel"
+														class="tab-pane multi-lang-tab-pane fade in <%= (languageCode == DEFAULT_LANGUAGE_CODE) ? 'active' : ''; %>"
+														id="multi_lang_<%= languageCode; %>">
+														<div class="row clearfix">
+															<div class="col-sm-12">
+																<div class="form-group">
+																	<div class="form-line">
+																		<label for="body_<%= languageCode; %>"
+																			class="control-label">
+																			<%= __('admin.question.question'); %>
+																				<% if(languageCode==DEFAULT_LANGUAGE_CODE){
+																					%>
+																					<span class="required"> *</span>
+																					<% } %>
+																		</label>
+																		<input type="hidden" class="form-control"
+																			name="qns_data[<%= languageId %>][language_id]"
+																			value="<%= languageId; %>" />
+																		<input type="text" class="form-control"
+																			name="qns_data[<%= languageId %>][question]" />
+																	</div>
+																	<% if(languageCode==DEFAULT_LANGUAGE_CODE){ %>
+																		<span id="question_error" class="error"></span>
+																		<% } %>
+																</div>
+															</div>
+														</div>
+														<div class="row clearfix">
+															<div class="col-sm-12"
+																id="<%= (languageCode == DEFAULT_LANGUAGE_CODE) ? DEFAULT_LANGUAGE_CODE : 'buildyourform' %>">
+																<div class="alert user-ingo-bg-gray" style="display: flex;align-items: center">
+																	<i class="material-icons font-18 pull-left">info</i>&nbsp;
+																	<%= __('admin.question.you_can_add_multiple_option_click_on_add_button');
+																		%>
+																		&nbsp;<button id="add_more" type="button"
+																			class="btn bg-orange btn-sm waves-effect"><i
+																				class="add material-icons font-14">add</i>
+																			&nbsp;<%= __("admin.system.add"); %>
+																		</button>
+																</div>
+																<% if(languageCode==DEFAULT_LANGUAGE_CODE){ %>
+																	<span id="name_error" class="error"></span>
+																	<span id="correct_answer_error"
+																		class="error"></span>
+																	<% } %>
+																<div class="fieldwrapper form-group">
+																	<div class="form-line">
+																		<div class="input-group">
+																			<span class="input-group-addon">
+																				A<span class="required">
+																					<% if(languageCode==DEFAULT_LANGUAGE_CODE){
+																						%>
+																						*
+																						<% } %>
+																				</span>
+																			</span>
+
+																			<div class="make-ans-inline-box">
+																				<div class="form-line">
+																					<input type="text"
+																						class="form-control"
+																						name="qns_data[<%= languageId %>][options][0][name]" />
+																					<input type="hidden"
+																						class="form-control"
+																						value="1"
+																						name="qns_data[<%= languageId %>][options][0][id]" />
+																				</div>
+																				<div class="make-ans">
+
+																				<% if(languageCode==DEFAULT_LANGUAGE_CODE){
+																					%>
+																					<div class="demo-radio-button ">
+																						<input name="correct_answer"
+																							type="radio"
+																							id="radio_30" value="1"
+																							class="with-gap radio-col-green" />
+																						<label for="radio_30"
+																							class="control-label">Mark
+																							As Answer</label>
+																					</div>
+																					<% } %>
+																				</div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+																<div class="fieldwrapper form-group">
+																	<div class="form-line">
+																		<div class="input-group">
+																			<span class="input-group-addon">
+																				B<span class="required">
+																					<% if(languageCode==DEFAULT_LANGUAGE_CODE){
+																						%>
+																						*
+																						<% } %>
+																				</span>
+																			</span>
+
+																			<div class="make-ans-inline-box">
+																				<div class="form-line">
+																					<input type="text"
+																						class="form-control"
+																						name="qns_data[<%= languageId %>][options][1][name]" />
+																					<input type="hidden"
+																						class="form-control"
+																						value="2"
+																						name="qns_data[<%= languageId %>][options][1][id]" />
+																				</div>
+																				<div class="make-ans">
+
+																				<% if(languageCode==DEFAULT_LANGUAGE_CODE){
+																					%>
+																					<div class="demo-radio-button ">
+																						<input name="correct_answer"
+																							type="radio"
+																							id="radio_31" value="2"
+																							class="with-gap radio-col-green" />
+																						<label 
+																							for="radio_31"
+																							class="control-label">Mark
+																							As Answer</label>
+																					</div>
+																					<% } %>
+																				</div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+													<% }); } } %>
+									</div>
+
+
+
+									<button type="button" id="question-add-btn-id"
+										class="btn bg-green btn-sm waves-effect btn-submit" <%- ADMIN_LOADING_TEXT %>
+										><i class="material-icons font-14">save</i>
+										<%= __("admin.system.submit"); %>
+									</button>
+									<a href="javascript:location.reload(true);" class="text-decoration-none"><button
+											type="button" class="btn bg-blue-grey btn-sm waves-effect"><i
+												class="material-icons font-14">refresh</i>
+											<%= __("admin.system.reset"); %>
+										</button></a>
+									<a href="<%=admin_list_url%>"><button type="button"
+											class="btn bg-brown btn-sm waves-effect"><i
+												class="material-icons font-14">cancel</i>
+											<%= __("admin.system.cancel"); %>
+										</button></a>
+								</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<%- contentFor("css") %>
+	<link rel="stylesheet" href="<%=WEBSITE_ADMIN_JS_PLUGIN_PATH%>bootstrap-select/css/bootstrap-select.css" />
+
+	<%- contentFor("script") %>
+		<script type="text/javascript"
+			src="<%=WEBSITE_ADMIN_JS_PLUGIN_PATH%>bootstrap-select/js/bootstrap-select.js"></script>
+		<script type="text/javascript">
+
+			/**
+			 * Function to submit form
+			 */
+			$('.btn-submit').click(function () {
+				var btnId = $(this).attr('id');
+				startTextLoading(btnId);
+				ajax_submit('add-question', function (status, response) {
+					if (status) {
+						window.location.href = response.redirect_url;
+					} else {
+						changeTab('<%= DEFAULT_LANGUAGE_CODE %>');
+						stopTextLoading(btnId);
+					}
+				});
+			});
+
+			/**
+			 * Getting subject list
+			 * @ on change method to get category value
+			 */
+			$('#levels').on('change', function () {
+				getDropdownList(this.value);
+			});
+
+
+			$('input[type=radio][name=question_type]').change(function () {
+				if (this.value == '<%= MULTIPLE_CHOICE_QUESTION%>') {
+					$("#buildyourform").removeClass('hide');
+					$("#<%= DEFAULT_LANGUAGE_CODE%>").removeClass('hide')
+				}
+				else if (this.value == '<%= INPUT_TYPE_QUESTION%>') {
+					$("#buildyourform").addClass('hide');
+					$("#<%= DEFAULT_LANGUAGE_CODE%>").addClass('hide')
+				}
+			});
+
+
+			/**
+			 * Getting subcategory list
+			 * @ on change method to get category value
+			 */
+			$(document).ready(function () {
+				var optionLabel = QUESTION_OPTION_NAME;
+				$("#add_more").click(function () {
+					var index = $('#<%= DEFAULT_LANGUAGE_CODE %> .fieldwrapper').length
+					var optionLabelName = optionLabel[index];
+					var optionId = index + 1;
+
+					/** check options length */
+					if (index == DEFAULT_QUESTION_OPTION_LENGTH) {
+						$("#add_more").addClass('hide');
+						popup_success('error', 'Error !', 'Limit Exceed');
+					} else {
+						/** Add field with default language */
+						var lastFieldDefault = $("#<%= DEFAULT_LANGUAGE_CODE %> div:last");
+						var intIdDefault = (lastFieldDefault && lastFieldDefault.length && lastFieldDefault.data("idx") + index) || 1;
+						var fieldWrapperDefault = $("<div class=\"fieldwrapper\" id=\"field" + index + "\"/>");
+						fieldWrapperDefault.data("idx", intIdDefault);
+						var fNameDefault = $("<div id=\"wrapper_" + index + "\"class=\"form-group\"><div class=\"form-line\"><div class=\"input-group\"><span class=\"input-group-addon\">" + optionLabelName + "<span class=\"required\"> *</span></span><div class=\"make-ans-inline-box\"><div class=\"form-line\"><input type=\"text\" class=\"form-control\" name=\"qns_data[<%= DEFAULT_LANGUAGE_MONGO_ID %>][options][" + index + "][name]\" /><input type=\"hidden\" class=\"form-control\" value=\"" + optionId + "\" name=\"qns_data[<%= DEFAULT_LANGUAGE_MONGO_ID %>][options][" + index + "][id]\" /></div><div class=\"make-ans\"><div class=\"demo-radio-button\"><input name=\"correct_answer\" type=\"radio\" id=\"radio_3" + index + "\" value=\"" + index + "\" class=\"with-gap radio-col-green\" />\<label for=\"radio_3" + index + "\" class=\"control-label\">Mark As Answer</label></div></div></div></div></div></div>");
+
+						/** Remove button */
+						var removeButtonDefault = $("<div class=\"row text-center\"><button type=\"button\" id=\"remove_button_" + index + "\" class=\"remove btn bg-red btn-sm waves-effect\" value=\"-\"><i class=\"material-icons\">delete</i>Delete Option</button></div>");
+						var removeButtonId = index - 1;
+						$("#remove_button_" + removeButtonId).addClass('hide');
+
+						/** Function is used to remove parent option of this remove button 
+							@ show hide buttton for next option
+							@ when option removed and added option length is three then removing hide class from add more
+						*/
+						removeButtonDefault.click(function () {
+							$(this).parent().remove();
+							var lastIndex = $('#<%= DEFAULT_LANGUAGE_CODE %> .fieldwrapper').length - 1;
+							if (lastIndex == 3) $("#add_more").removeClass('hide');
+							$("#remove_button_" + lastIndex).removeClass('hide');
+
+							/*** delete from different language */
+							var arebicLastIndex = lastIndex + 1;
+							$("#remove_btn_" + arebicLastIndex).trigger("click");
+						});
+
+
+						fieldWrapperDefault.append(fNameDefault);
+						fieldWrapperDefault.append(removeButtonDefault);
+						$("#<%= DEFAULT_LANGUAGE_CODE %>").append(fieldWrapperDefault);
+
+						removeButton.click(function () {
+							$(this).parent().remove();
+						});
+					}
+
+				});
+			});
+		</script>

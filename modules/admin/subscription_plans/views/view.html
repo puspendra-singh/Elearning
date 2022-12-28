@@ -1,0 +1,65 @@
+<%
+    var result          = (typeof result !== typeof undefined && result)    ?   result      :{};
+    %>
+<div class="container-fluid">
+    <div class="row clearfix">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card">
+                <div class="header">
+                    <h2><%= __('admin.system.view'); %></h2>
+                    <ul class="header-dropdown m-r--5 btn-right-top-margin visible-md visible-lg visible-sm">
+                        <li>
+                            <a href="<%=admin_list_url%>">
+                                <button type="button" class="btn bg-indigo waves-effect">
+                                    <i class="material-icons font-14">keyboard_backspace</i> <%= __('admin.system.back'); %>
+                                </button>
+                            </a>
+                        </li>
+                    </ul>
+                    <!-- Only For Mobile View-->
+                    <ul class="header-dropdown m-r--5 visible-xs">
+                        <li class="dropdown">
+                            <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <i class="material-icons">more_vert</i>
+                            </a>
+                            <ul class="dropdown-menu pull-right m-w-200">
+                                <li>
+                                    <a href="<%=admin_list_url%>" >
+                                        <i class="material-icons">keyboard_backspace</i><%= __("admin.system.back"); %>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="body table-responsive" id="aniimated-thumbnials">
+                    <table  class="row-border hover table table-bordered" cellspacing="0" width="100%">
+                        <tr> 
+                            <th class="text-right"><%= __('admin.subscription_plans.price'); %></th>   
+                            <td><%=(typeof result.price !== typeof undefined)   ? result.price  : 'N/A';%></td>
+                        </tr>
+                        <tr> 
+                            <th class="text-right"><%= __('admin.subscription_plans.title'); %></th>   
+                            <td><%=(typeof result.title !== typeof undefined)   ? result.title  : 'N/A';%></td>
+                        </tr>
+                        <tr> 
+                            <th class="text-right"><%= __('admin.subscription_plans.description'); %></th>   
+                            <td><%- (typeof result.description !== typeof undefined)   ? result.description  : 'N/A';%></td>
+                        </tr>
+                        <tr> 
+                            <th class="text-right"><%= __('admin.system.created'); %></th>   
+                            <td>
+                                <span class="setDateTimeFormat" data-date-time="<%=(typeof result.created !== typeof undefined)   ? result.created  : 'N/A';%>"></span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%- contentFor('css') %>
+    <link href="<%=WEBSITE_ADMIN_CSS_PATH%>lightbox.css" rel="stylesheet">
+
+<%- contentFor('script') %>
+    <script type="text/javascript" src="<%=WEBSITE_ADMIN_JS_PATH%>lightbox.js"></script>
