@@ -143,7 +143,11 @@ BREADCRUMBS = {
 	'admin/subscription_plans/list'  : [{name:'Subscription Plans',url:'',icon:'subtitles'}],
 	'admin/subscription_plans/add' 	 : [{name:'Subscription Plans',url:WEBSITE_ADMIN_URL+'subscription_plans',icon:'subtitles'},{name:'Add',url:'',icon:'add'}],
 	'admin/subscription_plans/view'  : [{name:'Subscription Plans',url:WEBSITE_ADMIN_URL+'subscription_plans',icon:'subtitles'},{name:'View',url:'',icon:'find_in_page'}],
-	'admin/subscription_plans/edit'  : [{name:'Subscription Plans',url:WEBSITE_ADMIN_URL+'subscription_plans',icon:'subtitles'},{name:'Edit',url:'',icon:'mode_edit'}]
+	'admin/subscription_plans/edit'  : [{name:'Subscription Plans',url:WEBSITE_ADMIN_URL+'subscription_plans',icon:'subtitles'},{name:'Edit',url:'',icon:'mode_edit'}],
+
+	/** TRANSACTION SECTION **/
+	'admin/transactions/list' : [{name:'Transactions',url:'',icon:'text_format'}],
+	'admin/transactions/view' : [{name:'Transactions',url:WEBSITE_ADMIN_URL+'transactions',icon:'text_format'},{name:'View',url:'',icon:'find_in_page'}],
 };
 
 

@@ -337,11 +337,10 @@ function User(req, res) {
         errorMessage	:res.__("front.user.please_enter_full_name")
       },
       "email":{
-        notEmpty		:true,
+        notEmpty		:false,
         isEmail			:{
           errorMessage:res.__("front.user.please_enter_a_valid_email")
-        },
-        errorMessage	:res.__("front.user.please_enter_an_email"),
+        }
       },
       "phone":{
         notEmpty		:true,
@@ -1359,7 +1358,7 @@ function User(req, res) {
   /*** Function to get unit document */
   this.getUnitDocuments = async(req,res,next)=>{
     req.body      = sanitizeData(req.body, NOT_ALLOWED_TAGS_XSS);
-    let userId    = (req.body.user_id) ? req.body.user_id : "";
+    let userId    = (req.body.user_id) ? req.body.user_id : ObjectId();
     let unitId    = (req.body.unit_id) ? req.body.unit_id : "";
     let levelId   = (req.body.level_id) ? req.body.level_id : ObjectId();
     let documentType = (req.body.document_type) ? req.body.document_type : {};
@@ -1374,15 +1373,6 @@ function User(req, res) {
         message   : res.__("front.user.invalid_request"),
         result    : {},
         error     : res.__("front.user.invalid_request"),
-      });
-    }
-    let isSolution = (documentType['name']) ? documentType['name'] : '';
-    if(isSolution && isSolution == 'Show Solution'){
-      let collection = db.collection("user_subscriptinos");
-      collection.find({level_id : ObjectId(levelId), user_id: ObjectId(userId)}).toArray((error, result)=>{
-        if(result && result.length){
-          isSubscription = true;
-        }
       });
     }
 
@@ -1407,6 +1397,14 @@ function User(req, res) {
         collection.countDocuments({'unit_id'   : ObjectId(unitId),'document_type._id' : ObjectId(documentType._id)},(err,countResult)=>{
           callback(err, countResult);
         });
+      },
+      (callback)=>{
+        /** check plan status **/
+        let collection = db.collection("users");
+        collection.findOne({'_id'   : ObjectId(userId)},(err,result)=>{
+          isSubscription = (result && result.is_subscription) ? result.is_subscription : false
+          callback(err, result);
+        });
       }
     ],
     (error, response)=>{
@@ -1425,7 +1423,7 @@ function User(req, res) {
         error           : '',
         message         : '',
         is_subscription : isSubscription,
-        totalRecords    :  (response[1]) ? response[1] : NOT,
+        totalRecords    : (response[1]) ? response[1] : NOT,
         result          : (response[0]) ? response[0] : []
       });
     });
@@ -1569,7 +1567,7 @@ function User(req, res) {
       });
     }
 
-    let userSubscriptinos = db.collection("user_subscriptinos");
+    let userSubscriptinos = db.collection("user_subscriptions");
     await userSubscriptinos.find({level_id : ObjectId(levelId), user_id: ObjectId(userId)}).toArray((error, result)=>{
       if(result && result.length){
         isSubscription = true;
@@ -1724,20 +1722,146 @@ function User(req, res) {
     });
   }// End getExamDetail
 
+  /*** Function is used to purchase a plan 
+  */
+  runBillPayment = (mobile, channel, amount, API_ID, API_KEY, MERCHANT_ID, PAYMENT_URL)=>{
+    return new Promise(resolve=>{
+      const axios = require("axios");
+      axios.create({
+        baseURL: '',
+        timeout: 1000,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'Content-Type' : 'application/json'
+        }
+      });
+
+      axios({
+        method: 'post',
+        url: PAYMENT_URL,
+        data: {
+          "auth":{
+            "api_id"      : API_ID,
+            "api_key"     : API_KEY,
+            "channel"     : channel,
+            "service_id"  : "1002",
+            "merchant_id" : MERCHANT_ID
+          },
+          "data":{
+            "method" : "runBillPayment",
+            "amount"  : String(amount),
+            "sender_id" : String(mobile),
+            "request_id"  : String(ObjectId()),
+            "reference_no"  : String(ObjectId())
+          },
+          "userdata":{
+            "udf1":"ZynlePay System"
+          }
+        }
+      }).then(response=>{
+        let finalResponse = (response.data && response.data['response']) ? response.data['response'] : {};
+        return resolve(finalResponse)
+      })
+    });
+  }
+
+  /*** Function is used to purchase a plan */
+  checkPlanStatus = (levelId, planId, userId)=>{
+    return new Promise(resolve=>{
+      let collection = db.collection("user_subscriptions");
+
+      /** If payment not done with in 300 seconds, update status as expired **/
+      collection.findOne({
+        'level_id' : ObjectId(levelId), 
+        'user_id'  : ObjectId(userId),
+        "plan_id"  : ObjectId(planId),
+        'status'   : DEACTIVE
+      },(err,result)=>{
+        if(err) return resolve({status : STATUS_ERROR});
+        if(result){
+          let createdDate = (result.created) ? result.created : getUtcDate();
+          let diffTime = getDifferenceBetweenTwoDates(createdDate,getUtcDate());
+          if(diffTime > PAYMENT_TIME_OUT){
+            collection.updateOne(
+              {
+                'level_id' : ObjectId(levelId), 
+                'user_id'  : ObjectId(userId),
+                'status'   : DEACTIVE
+              },{$set:{
+                'status'   : REJECTED,
+                "modified" : getUtcDate()
+              }},(errorExpireTime, resultExpireTime)=>{
+                if(errorExpireTime) return resolve({status  :  STATUS_ERROR})
+              }
+            )
+          }
+        }
+      });
+
+
+      asyncParallel([
+        (callback)=>{
+          /** Get active plan **/
+          collection.findOne({
+            'level_id' : ObjectId(levelId), 
+            'user_id'  : ObjectId(userId),
+            "plan_id"  : ObjectId(planId),
+            'status'   : ACTIVE
+          },(err,result)=>{
+              callback(err, result);
+          });
+        },
+        (callback)=>{
+          /** Get inactive plan **/
+          collection.findOne({
+            'level_id' : ObjectId(levelId), 
+            'user_id'  : ObjectId(userId),
+            "plan_id"  : ObjectId(planId),
+            'status'   : DEACTIVE
+          },(err,result)=>{
+            callback(err, result);
+          });
+        },
+        (callback)=>{
+          /** Get expired plan **/
+          collection.findOne({
+            'level_id' : ObjectId(levelId), 
+            'user_id'  : ObjectId(userId),
+            "plan_id"  : ObjectId(planId),
+            'status'   : REJECTED
+          },(err,result)=>{
+            callback(err, result);
+          });
+        }
+      ],
+      (error, response)=>{
+        if(error) return resolve({status : STATUS_ERROR})
+
+        return resolve({
+          status    :  STATUS_SUCCESS,
+          result    : (response[0]) ? 'active' : ((response[1]) ? 'inactive': ((response[2]) ? 'expired': 'not_purchased'))
+        })
+      });
+    });
+  }
+
   /*** Function is used to get purchase plan */
-  this.purchasePlan = (req,res,next)=>{
+  this.purchasePlan = async(req,res,next)=>{
 
     /** Sanitize Data **/
     req.body            = sanitizeData(req.body,NOT_ALLOWED_TAGS_XSS);
-
+  
     let slug        = (req.body.slug)     ? req.body.slug : "";
     let mobile      = (req.body.mobile)   ? req.body.mobile : "";
+    let amount      = (req.body.amount)   ? req.body.amount : '1';
     let userId      = (req.body.user_id)  ? req.body.user_id : "";
     let planId      = (req.body.plan_id)  ? req.body.plan_id : "";
-    let channel     = (req.body.channel)  ? req.body.channel : "";
+    let channel     = (req.body.channel)  ? req.body.channel : "momo";
     let levelId     = (req.body.level_id) ? req.body.level_id : "";
-
-    if(!planId || !userId || !slug || !levelId){
+    let dialCode    = (req.body.dial_code) ? req.body.dial_code : "";
+    mobile          = dialCode+mobile;
+    
+    if(!planId || !userId || !slug || !levelId || !mobile){
       return res.send({
         status    : API_STATUS_ERROR,
         message   : res.__("front.user.invalid_request"),
@@ -1746,120 +1870,248 @@ function User(req, res) {
       })
     }
 
+    /** payment request*/
+    let API_ID		    =	res.locals.settings["Zynlepay.payment.api_id"];
+    let API_KEY		    =	res.locals.settings["Zynlepay.payment.api_key"];
+    let MERCHANT_ID   =	res.locals.settings["Zynlepay.payment.merchant_id"];
+    let PAYMENT_URL	  =	res.locals.settings["Zynlepay.payment.request_url"];
+    let PAYMENT_STATUS_URL =	res.locals.settings["Zynlepay.payment.check_payment_status"];
+
+    /** Function is used to check payment and update status accordingly */
+    await checkPaymentStatus(levelId, userId, PAYMENT_STATUS_URL);
+
+    /** Function is used to check plan status */
+    let planStatus = await checkPlanStatus(levelId, planId, userId);
+    if(planStatus.status == STATUS_ERROR){
+      return res.send({
+        status    : API_STATUS_ERROR,
+        message   : res.__("front.something_went_wrong_please_try_again_later"),
+        result    : [],
+        error     : res.__("front.something_went_wrong_please_try_again_later"),
+      })
+    }
+
+    if(planStatus.result){
+      if(planStatus.result == 'inactive'){
+        return res.send({
+          status          : API_STATUS_SUCCESS,
+          error           : '',
+          message         : res.__("front.plan.transaction_in_process"),
+        });
+      }
+      else if(planStatus.result == 'active'){
+        return res.send({
+          status          : API_STATUS_SUCCESS,
+          error           : '',
+          message         : res.__("front.plan.already_you_have_active_plan"),
+        });
+      }
+      // else if(planStatus.result == 'not_purchased'){
+      //   return res.send({
+      //     status          : API_STATUS_SUCCESS,
+      //     error           : '',
+      //     message         : res.__("front.plan.plan_not_exist"),
+      //   });
+      // }
+    }
+
     /** config start and end date of plan **/
     let date = new Date();
     let start_date = getUtcDate(date);
     let end_date = getUtcDate(new Date(date.setDate(date.getDate() + 364)));
 
-    if(slug == "mothly"){
+    if(slug == "monthly"){
       let endDate   = new Date(date.setDate(date.getDate() + 29));
       start_date = getUtcDate(date)
       end_date   = getUtcDate(endDate)
     }
 
-    let collection = db.collection("user_subscriptinos");
-    collection.insertOne({
-        'start_date': start_date, 
-        'end_date'  : end_date,
-        'level_id'  : ObjectId(levelId), 
-        'user_id'   : ObjectId(userId), 
-        'plan_id'   : ObjectId(planId),
-        'created'   : getUtcDate()
-      },(error,result)=>{
-      if(error){
-        return res.send({
-          status    : API_STATUS_ERROR,
-          message   : res.__("front.something_went_wrong_please_try_again_later"),
-          result    : [],
-          error     : res.__("front.something_went_wrong_please_try_again_later"),
-        })
-      }
 
-      let users = db.collection("users");
-      users.updateOne(
-        {
-          _id : ObjectId(userId)
-        },{
-          $set : {
-            is_subscription : true
-          }
-        },{ 
-          $addToSet: { 
-            plans: [planId] 
-          }
-        },(errorUpdate,resultUpdate)=>{
-          if(errorUpdate){
-            return res.send({
-              status    : API_STATUS_ERROR,
-              message   : res.__("front.something_went_wrong_please_try_again_later"),
-              result    : [],
-              error     : res.__("front.something_went_wrong_please_try_again_later"),
-            })
-          }
-          return res.send({
-            status          : API_STATUS_SUCCESS,
-            error           : '',
-            message         : res.__("front.subscription_plan.you_have_purchase_plan_successfully"),
-            result          : (resultUpdate) ? resultUpdate : []
-          });
-        })
-    });
-  }// End purchasePlan
 
-  /*** Function is used to purchase a plan */
-  purchasePlan2 = ()=>{
-
-    // /** Sanitize Data **/
-    // req.body            = sanitizeData(req.body,NOT_ALLOWED_TAGS_XSS);
-
-    // let slug        = (req.body.slug)     ? req.body.slug : "";
-    // let mobile      = (req.body.mobile)   ? req.body.mobile : "";
-    // let userId      = (req.body.user_id)  ? req.body.user_id : "";
-    // let planId      = (req.body.plan_id)  ? req.body.plan_id : "";
-    // let channel     = (req.body.channel)  ? req.body.channel : "";
-    // let levelId     = (req.body.level_id) ? req.body.level_id : "";
-    
-    // Send a POST request
-    const axios = require("axios");
-    axios.create({
-      baseURL: '',
-      timeout: 1000,
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        'Content-Type' : 'application/x-www-form-urlencoded'
-      }
-    });
-
-    axios({
-      method: 'post',
-      url: 'https://www.zynlepay.com/zynlepay/jsonapi/',
-      data: {
-        "auth":{
-            "merchant_id":"MEC754",
-            "api_id":"568685840b8683b96b310134ce0ac115d905d69c",
-            "service_id":"1002",
-            "api_key":"e2a19fce042ceb18d810ea613a4658f2db5388a9",
-            "channel":"momo"
-        },
-        "data":{
-            "method":"runBillPayment",
-            "request_id":"1",
-            "sender_id":"0977124444", 
-            "reference_no":"0977124444",
-            "amount":"5.0"
-        },
-        "userdata":{
-            "udf1":"ZynlePay System"
-        }
-      }
-    }).then(response=>{
-      let finalResponse = (response.data && response.data['response']) ? response.data['response'] : {};
+    runBillPayment(
+      mobile, channel, amount, API_ID, API_KEY, MERCHANT_ID, PAYMENT_URL
+    ).then(finalResponse=>{
       let referenceNo   = (finalResponse.reference_no) ? finalResponse.reference_no : '';
       let transactionId = (finalResponse.transaction_id) ? finalResponse.transaction_id : '';
       let responseCode  = (finalResponse.response_code) ? finalResponse.response_code : '';
-    });
+      finalResponse['date'] = getUtcDate();
+
+      if(responseCode == '990'){
+        return res.send({
+          status    : API_STATUS_ERROR,
+          message   : res.__("front.momo.mobile_does_not_exist"),
+          error     : res.__("front.momo.mobile_does_not_exist")
+        })
+      }else if(responseCode == '120'){
+
+        let collection = db.collection("user_subscriptions");
+        collection.insertOne({
+            'start_date': start_date, 
+            'end_date'  : end_date,
+            'status'    : NOT, 
+            'level_id'  : ObjectId(levelId), 
+            'user_id'   : ObjectId(userId), 
+            'plan_id'   : ObjectId(planId),
+            'created'   : getUtcDate()
+          },(error,result)=>{
+            if(error){
+              return res.send({
+                status    : API_STATUS_ERROR,
+                message   : res.__("front.something_went_wrong_please_try_again_later"),
+                result    : [],
+                error     : res.__("front.something_went_wrong_please_try_again_later"),
+              })
+            }
+
+            let transactions = db.collection('transactions');
+            transactions.insertOne({
+              user_id : ObjectId(userId),
+              plan_id : ObjectId(planId),
+              amount : Number(amount),
+              mobile : mobile,
+              reference_no : referenceNo,
+              transaction_id : transactionId,
+              payment_status : responseCode,
+              payment_response : [finalResponse],
+              created : getUtcDate(),
+              modified : getUtcDate(),
+            },(errorTransaction, resultTransaction)=>{
+              if(errorTransaction){
+                return res.send({
+                  status    : API_STATUS_ERROR,
+                  message   : res.__("front.something_went_wrong_please_try_again_later"),
+                  result    : [],
+                  error     : res.__("front.something_went_wrong_please_try_again_later"),
+                })
+              }else{
+                return res.send({
+                  status          : API_STATUS_SUCCESS,
+                  error           : '',
+                  message         : res.__("front.subscription_plan.you_have_successfully_made_a_payment_request_to_purchase_a_plan"),
+                  result          : resultTransaction
+                });
+              }
+            });
+          }
+        );
+      }
+    })
+      
   }// End purchasePlan
-  purchasePlan2();
+
+  /***
+   * Function is used to update payment status
+  */
+  checkPaymentStatus = async(levelId, userId, paymentStatusUrl)=>{
+    return  new Promise( async resolve=>{
+
+      let userSubscriptions = db.collection('user_subscriptions');
+      let userSubscriptionsDetail = await userSubscriptions.findOne({"level_id" :  ObjectId(levelId), "user_id" : ObjectId(userId)})
+      let planId = (userSubscriptionsDetail) ? userSubscriptionsDetail.plan_id : ObjectId();
+      
+      let transactions = db.collection('transactions');
+      transactions.findOne(
+        {
+          "plan_id" : ObjectId(planId), 
+          "user_id" : ObjectId(userId),
+          "payment_status" : "120"
+        },(error, result)=>{
+        if(!error && result){
+          
+          let axios = require("axios");
+          axios.create({
+            baseURL: '',
+            timeout: 1000,
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest',
+              'Content-Type' : 'application/json'
+            }
+          });
+
+          axios({
+            method: 'post',
+            url: paymentStatusUrl,
+            data: {"reference_no" : String(result.reference_no)}
+          }).then(response=>{
+            let finalResponse  = (response.data) ? response.data : {};
+            if(finalResponse){
+              let isSubscription = false;
+              let subscriptinoStatus = DEACTIVE;
+              let transactionStatus  = "120";
+
+              if(finalResponse && finalResponse.response_code == "100"){
+                isSubscription = true;
+                transactionStatus = "100";
+                subscriptinoStatus = ACTIVE;
+              }
+
+              if(finalResponse && finalResponse.response_code == "995"){
+                isSubscription = false;
+                transactionStatus = "995";
+                subscriptinoStatus = NOT_COMPLETED;
+              }
+
+              asyncParallel([
+                (callback)=>{
+                  finalResponse['date'] = getUtcDate()
+                  let transactions = db.collection('transactions');
+                  transactions.updateOne(
+                    {
+                      reference_no : String(result.reference_no)
+                    },
+                    {$set : {
+                      payment_status : transactionStatus, 
+                      modified : getUtcDate()
+                    },$addToSet: { 
+                      "payment_response": finalResponse 
+                    }},(errorTransaction, resultTransaction)=>{
+                      callback(errorTransaction, resultTransaction)
+                    }
+                  );
+                },
+                (callback)=>{
+                  userSubscriptions.updateOne(
+                    {
+                      plan_id : ObjectId(planId),
+                      user_id : ObjectId(userId)
+                    },
+                    {$set : {
+                      status : subscriptinoStatus,
+                      modified : getUtcDate()
+                    }},(errorSubscription, resultSubscription)=>{
+                      callback(errorSubscription, resultSubscription)
+                  });
+                },
+                (callback)=>{
+                  let users = db.collection('users');
+                  users.updateOne(
+                    {
+                      _id : ObjectId(userId)
+                    },
+                    {$set : {
+                      is_subscription : isSubscription, 
+                      modified : getUtcDate()
+                    }},(errorUser, resultUser)=>{
+                      callback(errorUser, resultUser)
+                  });
+                }
+              ],(errorUpdate, responseUpdate)=>{
+                if(errorUpdate) console.log(errorUpdate)
+                if(responseUpdate) console.log("success")
+                return resolve()
+              });
+            }else{
+              console.log("not matched")
+              return resolve()
+            }
+          })
+        }else{
+          console.log("not matched 2")
+          return resolve()
+        }
+      })
+    })
+  } //checkPaymentStatus
 
   /** Function is used to save exam data */
   this.examSubmission = async(req, res, next)=>{
@@ -2017,5 +2269,12 @@ function User(req, res) {
       }
     })
   } //notificationUpdate
+
+  /** Function is used to update plan status */
+  this.updatePlanStatus = (req, res, next)=>{
+    let userSubscriptinos = db.collection("user_subscriptions");
+    userSubscriptinos.updateMany({"end_date" : {$lt:getUtcDate()}},{$set : {status : REJECTED}}); 
+  }
 }
+
 module.exports = new User();

@@ -49,15 +49,15 @@
                         <i class="material-icons">business</i>
                     </div>
                     <div class="content">
-                        <div class="text">Earnings</div>
+                        <div class="text">Earnings (<%=CURRENCY_SYMBOL %>)</div>
                         <div 
                             class="number count-to" 
                             data-from="0" 
-                            data-to="0" 
+                            data-to="<%= (result.totalEarnings) ? result.totalEarnings : 0%>" 
                             data-speed="1500"
                             data-fresh-interval="20"
                         >
-                            0
+                        <%= (result.totalEarnings) ? result.totalEarnings : 0%>
                         </div>
                     </div>
                 </div>
@@ -108,7 +108,7 @@
             <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                 <div class="card">
                     <div class="header">
-                        <h2>Earnings</h2>
+                        <h2>Earnings (<%=CURRENCY_SYMBOL %>)</h2>
                     </div>
                     <div class="body">
                         <iframe 
@@ -132,7 +132,7 @@
         <script type="text/javascript">
                 $('.count-to').countTo();
                 var userRecords = <%- JSON.stringify(result.monthYearWiseData); %>;
-                var earningRecords = <%- JSON.stringify(result.monthYearWiseData); %>;
+                var earningRecords = <%- JSON.stringify(result.monthYearWiseDataEarning); %>;
         </script>
         <script src="<%=WEBSITE_ADMIN_JS_PLUGIN_PATH%>chartjs/Chart.bundle.js" type="text/javascript"></script>
         <script src="<%=WEBSITE_ADMIN_JS_PAGE_PATH%>dashboard/chartjs.js" type="text/javascript"></script>

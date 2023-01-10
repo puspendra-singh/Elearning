@@ -7,7 +7,7 @@ function getChartJs(userType) {
     var config 			= 	null;
     var monthsArray 	=   getPreviousMonths();
 	$.each(userRecords, function(index,html){
-		for(var i=0; i < monthsArray.length; i++) {
+		for(var i=0; i < monthsArray.length; i++) {	
 			if(typeof html[monthsArray[i]['month_year']] !== typeof undefined){
 				monthsArray[i]['total_user'] 	= (html[monthsArray[i]['month_year']]['total_users']) ? html[monthsArray[i]['month_year']]['total_users'] : 0;
 			}
@@ -75,10 +75,11 @@ function getChartJs(userType) {
 function getChartJsEarnings(userType) { 
     var config 			= 	null;
     var monthsArray 	=   getPreviousMonths();
+	console.log(earningRecords);
 	$.each(earningRecords, function(index,html){
 		for(var i=0; i < monthsArray.length; i++) {
 			if(typeof html[monthsArray[i]['month_year']] !== typeof undefined){
-				monthsArray[i]['total_earning'] 	= (html[monthsArray[i]['month_year']]['total_earning']) ? html[monthsArray[i]['month_year']]['total_earning'] : 0;
+				monthsArray[i]['total_amount'] 	= (html[monthsArray[i]['month_year']]['total_amount']) ? html[monthsArray[i]['month_year']]['total_amount'] : 0;
 			}
 		}
 	});
@@ -88,8 +89,8 @@ function getChartJsEarnings(userType) {
 
 	for(var i=0; i < monthsArray.length; i++) {
 		months.push(monthsArray[i]['name']);
-		if(typeof monthsArray[i]['total_user'] !== typeof undefined){
-			earnings.push(monthsArray[i]['total_earning']);
+		if(typeof monthsArray[i]['total_amount'] !== typeof undefined){
+			earnings.push(monthsArray[i]['total_amount']);
 		}else{
 			earnings.push(0);
 		}
@@ -101,7 +102,7 @@ function getChartJsEarnings(userType) {
 		dataSets.push({
 			label: "Earnings",
 			data: earnings.reverse(),
-			backgroundColor: 'rgba(63, 81, 181, 0.9)'
+			backgroundColor: '#607d8b'
 		});
 	}
 
@@ -141,7 +142,7 @@ function getChartJsEarnings(userType) {
 }
 
 function getPreviousMonths(){
-    var theMonths = new Array("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12");
+    var theMonths = new Array("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12");
     var theMonthNames = new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
     var today = new Date();
 

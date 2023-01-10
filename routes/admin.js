@@ -340,6 +340,9 @@ module.exports = {
 		require(WEBSITE_ADMIN_MODULES_PATH+"newsletter/newsletter_template_routes");
 		require(WEBSITE_ADMIN_MODULES_PATH+"newsletter/scheduled_newsletter_routes");
 
+		/** Include transactions Module **/
+		require(WEBSITE_ADMIN_MODULES_PATH+"transactions/routes");
+
 		/** Route is used to render 404 page admin*/
 		app.get(FRONT_END_NAME+ADMIN_NAME+"/*", function(req, res){
 			let layout404 = WEBSITE_ADMIN_LAYOUT_PATH+"404";

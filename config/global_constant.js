@@ -341,7 +341,7 @@ EXAM_MAX_DURATION                   =   180;
 /** Password length configuration **/
 PASSWORD_MIN_LENGTH					= 	6;
 PASSWORD_MAX_LENGTH					= 	30;
-PASSWORD_ALPHANUMERIC_REGEX         =   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d#$@!%&*?]{6,30}$/;
+PASSWORD_ALPHANUMERIC_REGEX         =   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z]{6,30}$/;
 PASSWORD_LENGTH_VALIDATION			=	{};
 PASSWORD_LENGTH_VALIDATION["min"]	=	PASSWORD_MIN_LENGTH;
 PASSWORD_LENGTH_VALIDATION["max"]	=	PASSWORD_MAX_LENGTH;
@@ -476,7 +476,7 @@ BCRYPT_PASSWORD_SALT_ROUNDS = 1;
 /***Payment configration */
 CURRENCY = "NGN";
 /** Default currency for payments */
-CURRENCY_SYMBOL	=	'₦';
+CURRENCY_SYMBOL	=	'₸';
 /** To test message functionality in development */
 INDIA_COUNTRY_CODE  	= '+91';
 
@@ -613,5 +613,5 @@ QUESTION_TYPES[MULTIPLE_CHOICE_QUESTION] = MULTIPLE_CHOICE_QUESTION_NAME;
 QUESTION_TYPES[INPUT_TYPE_QUESTION] 	 = INPUT_TYPE_QUESTION_NAME;
 QUESTION_OPTION_NAME = ['A','B','C','D','E','F'];
 
-
+PAYMENT_TIME_OUT	=	300; //seconds
 EXAM_QUIZ_LIMIT	=	10;

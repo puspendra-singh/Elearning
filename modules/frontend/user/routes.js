@@ -123,12 +123,22 @@ routes.post(API_URL+"exam_questions",isUserLogedInApi,(req,res,next)=>{
 });
 
 /** Routing is used to purchase plan **/
-routes.post(API_URL+"purchase_plan",isUserLogedInApi,(req,res,next)=>{
+routes.post(API_URL+"purchase_plan",(req,res,next)=>{
     user.purchasePlan(req,res,next);
 });
 
 /** Routing is used to exam submission **/
 routes.post(API_URL+"exam_submission",isUserLogedInApi,(req,res,next)=>{
     user.examSubmission(req,res,next);
+});
+
+/** Routing is used to check payment status **/
+routes.post(API_URL+"check_payment_status",(req,res,next)=>{
+    user.checkPaymentStatus(req,res,next);
+});
+
+/** Routing is used to update plan status **/
+routes.get(API_URL+"update_plan_status",(req,res,next)=>{
+    user.updatePlanStatus(req,res,next);
 });
 

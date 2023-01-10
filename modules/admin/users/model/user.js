@@ -220,9 +220,6 @@ function User() {
      * @return render
      */
     this.dashboard = (req, res, next)=>{
-        let newDate = new Date();
-        let currentYear = newDate.getFullYear();
-
         asyncParallel({
             totalUsers : (callback)=>{
                 let users =   db.collection("users");
@@ -234,6 +231,21 @@ function User() {
                 let videos = db.collection('video_lessons');
                 videos.countDocuments({},(error,result)=>{
                     callback(error, result)
+                })
+            },
+            totalEarnings : (callback)=>{
+                let transactions = db.collection('transactions');
+                transactions.aggregate([
+                    {$match:{
+                        "payment_status" : "100"
+                    }},
+                    {$group:{
+                        _id : null,
+                        sum : {$sum : "$amount"}
+                    }}
+                ]).toArray((error,result)=>{
+                    let totalEearning = (result && result.length > NOT) ? result[0]['sum'] : NOT 
+                    callback(error, totalEearning)
                 })
             },
             totalInquiries : (callback)=>{
@@ -259,11 +271,6 @@ function User() {
                       },
                     },
                     {
-                      $match: {
-                        year: currentYear,
-                      },
-                    },
-                    {
                       $group: {
                         _id: { month: '$month', year: '$year' },
                         count: { $sum: 1 },
@@ -280,6 +287,40 @@ function User() {
                     });
                     callback(err, result);
                 });
+            },
+            monthYearWiseDataEarning: (callback) => {
+                let transactions =   db.collection("transactions");
+                transactions
+                  .aggregate([
+                    {
+                      $match: {
+                        "payment_status" : "100"
+                      },
+                    },
+                    {
+                      $project: {
+                        month: { $month: '$created' },
+                        year: { $year: '$created' },
+                        amount : 1
+                      },
+                    },
+                    {
+                      $group: {
+                        _id: { month: '$month', year: '$year' },
+                        sum: { $sum: "$amount" },
+                      },
+                    },
+                    {$project: { 
+                        month_year: { $concat: [ { $toString: "$_id.month" }, "-", { $toString: "$_id.year" } ] } ,
+                        total_amount: "$sum"
+                    }}
+                  ])
+                  .toArray((err, result) => {
+                    result.map((records,index)=>{
+                        records[records.month_year] = {'total_amount': records.total_amount}
+                    });
+                    callback(err, result);
+                });
             }
         },(err, response)=>{
 
@@ -290,7 +331,9 @@ function User() {
                     'totalUsers' : response.totalUsers,
                     'totalVideoLessions' : response.totalVideoLessions,
                     'totalInquiries' : response.totalInquiries,
-                    'monthYearWiseData' : response.monthYearWiseUsers
+                    'totalEarnings' : response.totalEarnings,
+                    'monthYearWiseData' : response.monthYearWiseUsers,
+                    'monthYearWiseDataEarning' : response.monthYearWiseDataEarning
                 }
             });
         });

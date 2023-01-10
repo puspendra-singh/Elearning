@@ -1051,11 +1051,11 @@ addMinute = function(minute) {
 * @return difference between two days in seconds
 */
 getDifferenceBetweenTwoDates = function(startDate,endDate) {
-	startDate 	= new Date(startDate);
-	endDate 	= (endDate) ? new Date(endDate) : new Date();
-	var timeDiff = Math.abs(endDate.getTime() - startDate.getTime());
-	var diffInSeconds =	(timeDiff /1000)/86400;
-	return diffInSeconds;
+	startDate 	= startDate;
+	endDate 	= (endDate) ? endDate : new Date();
+	var diff =(endDate.getTime() - startDate.getTime()) / 1000;
+	diff /= (60);
+	return Math.abs(Math.round(diff*60));
 }//end getDifferenceBetweenTwoDates();
 
 
